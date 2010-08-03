@@ -1,0 +1,3 @@
+; dlltool --base-file C:\Users\shuax\AppData\Local\Temp/cca06232.base --output-exp tea.exp --dllname tea.dll --output-def libtea.def --no-export-all-symbols --add-stdcall-alias --exclude-symbol=DllMainCRTStartup@12 --def C:\Users\shuax\AppData\Local\Temp/cca06232.def --output-lib libtea.a
+EXPORTS
+	decrypt @ 1
