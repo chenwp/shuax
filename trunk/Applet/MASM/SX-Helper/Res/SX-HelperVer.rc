@@ -1,0 +1,27 @@
+#define v 1
+v VERSIONINFO
+FILEVERSION 1,6
+PRODUCTVERSION 1,6
+FILEOS 0x00000004
+FILETYPE 0x00000001
+BEGIN
+  BLOCK "StringFileInfo"
+  BEGIN
+    BLOCK "080404B0"
+    BEGIN
+      VALUE "CompanyName", "舒俊杰\0"
+      VALUE "FileVersion", "1.6\0"
+      VALUE "FileDescription", "一个小巧的系统辅助软件  制作:舒俊杰\0"
+      VALUE "InternalName", "SX-Helper\0"
+      VALUE "LegalCopyright", "www.shuax.com\0"
+      VALUE "LegalTrademarks", "SX-Helper\0"
+      VALUE "OriginalFilename", "SX-Helper.exe\0"
+      VALUE "ProductName", "SX-Helper\0"
+      VALUE "ProductVersion", "1.6\0"
+    END
+  END
+  BLOCK "VarFileInfo"
+  BEGIN
+    VALUE "Translation", 0x0804, 0x04B0
+  END
+END
