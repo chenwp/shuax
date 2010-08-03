@@ -1,0 +1,121 @@
+#include "D:/RadASM/masm32/include/resource.h"
+#include "Res/SX-HelperVer.rc"
+
+#define IDC_EDIT1                       51000
+#define IDC_EDIT2                       51001
+
+#define IDC_RADIO1                      51003
+#define IDC_RADIO2                      51004
+#define IDC_RADIO3                      51005
+#define IDC_STATIC                      -1
+
+1 24 "Res/xp.bin"
+SX ICON DISCARDABLE "Res/sx.ico"
+TIME BITMAP DISCARDABLE "Res/time.bmp"
+POWER BITMAP DISCARDABLE "Res/power.bmp"
+UP BITMAP DISCARDABLE "Res/up.bmp"
+UPER BITMAP DISCARDABLE "Res/uper.bmp"
+DOWN BITMAP DISCARDABLE "Res/down.bmp"
+LOW BITMAP DISCARDABLE "Res/low.bmp"
+RES BITMAP DISCARDABLE "Res/res.bmp"
+EXIT BITMAP DISCARDABLE "Res/exit.bmp"
+MENU MENU
+BEGIN
+  POPUP "我爱肖虹"
+  BEGIN
+    POPUP "热键功能(&U)"
+    BEGIN
+      MENUITEM "加大音量\tCtrl+→",10001
+      MENUITEM "减小音量\tCtrl+←",10002
+      MENUITEM "静音\tCtrl+End",10003
+      MENUITEM SEPARATOR
+      MENUITEM "加大亮度\tCtrl+↑",10004
+      MENUITEM "减小亮度\tCtrl+↓",10005
+      MENUITEM "默认亮度\tCtrl+Home",10006
+      MENUITEM SEPARATOR
+      MENUITEM "关闭显示器\tShift+Insert",10021
+      MENUITEM "屏幕截图\tCtrl+F3",10037
+      MENUITEM SEPARATOR
+      MENUITEM "隐藏/显示程序\tCtrl+F12",10007
+      MENUITEM "退出程序\tShift+End",10008
+      
+    END
+    POPUP "系统工具(&T)"
+    BEGIN
+      MENUITEM "注册表编辑器",10009
+      MENUITEM "系统信息",10038
+      MENUITEM "组策略编辑器",10011
+      MENUITEM "命令提示符",10012
+      MENUITEM "任务管理器(&T)",10013
+      MENUITEM "计算器(&C)",10015
+      MENUITEM "添加删除程序",10010
+      MENUITEM "设备管理器",10014
+    END
+    POPUP "系统控制(&C)"
+    BEGIN
+      MENUITEM "打开光驱",10016
+      MENUITEM "关闭光驱",10017
+      MENUITEM SEPARATOR
+      MENUITEM "重建图标缓存",10020
+      MENUITEM "显示桌面",10018
+      MENUITEM "启动屏保(&S)",10019
+      MENUITEM SEPARATOR
+      MENUITEM "显示隐藏文件",10043,GRAYED
+      MENUITEM "显示文件扩展名",10043,GRAYED
+      MENUITEM SEPARATOR
+      MENUITEM "关闭显示器",10021
+      POPUP "分辨率设置(&F)"
+      BEGIN
+        MENUITEM "1024×768",10022
+        MENUITEM "1280×800",10023
+        MENUITEM "1440×900",10024
+        MENUITEM "1366×768",10026
+        MENUITEM "1680×1050",10025
+        MENUITEM "800×600",10027
+      END
+      MENUITEM SEPARATOR
+      MENUITEM "定时提醒...",10040
+    END
+    POPUP "电源操作(&P)"
+    BEGIN
+      MENUITEM "强制关机",10033
+      MENUITEM "强制重启",10034
+      MENUITEM SEPARATOR
+      MENUITEM "关机",10028
+      MENUITEM "重新启动",10029
+      MENUITEM "注销(&L)",10030
+      MENUITEM SEPARATOR
+      MENUITEM "睡眠",10031
+      MENUITEM "休眠(&H)",10032
+      MENUITEM "锁定",10041
+    END
+    MENUITEM SEPARATOR
+    
+    MENUITEM "关于",10035
+    MENUITEM "设置...",10042,GRAYED
+    MENUITEM "开机启动",10036
+    MENUITEM "退出(&E)",10008
+  END
+END
+
+101 DIALOGEX 0,0,0,0
+STYLE 0x80000000
+BEGIN
+END
+
+102 DIALOG DISCARDABLE  0, 0, 205, 107
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU | DS_CENTER
+CAPTION "SX-Helper 定时提醒"
+FONT 9, "微软雅黑"
+BEGIN
+    PUSHBUTTON      "确定",IDOK,152, 88, 50, 14 
+    GROUPBOX        "设置提醒",IDC_STATIC,2, 3, 200, 83 
+    EDITTEXT        IDC_EDIT1,6, 24, 190, 57 ,ES_MULTILINE | ES_WANTRETURN | WS_VSCROLL
+    LTEXT           "在",IDC_STATIC,10, 12, 12, 10 
+    EDITTEXT        IDC_EDIT2,22, 12, 22, 10 ,ES_NUMBER
+    LTEXT           "分钟后执行",IDC_STATIC,46, 12, 64, 10 
+    
+  CONTROL "关机",IDC_RADIO1,"Button",WS_VISIBLE|BS_AUTORADIOBUTTON,9,90,38,12
+  CONTROL "重启",IDC_RADIO2,"Button",WS_VISIBLE|BS_AUTORADIOBUTTON,54,90,38,12
+  CONTROL "注销",IDC_RADIO3,"Button",WS_VISIBLE|BS_AUTORADIOBUTTON,96,90,38,12
+END
