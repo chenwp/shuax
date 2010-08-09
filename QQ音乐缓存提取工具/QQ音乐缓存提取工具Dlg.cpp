@@ -179,6 +179,12 @@ BOOL CQQDlg::OnInitDialog()
 		SHGetPathFromIDList(pidl,AppDataPath); 
 		strcat(AppDataPath,"\\Tencent\\QQMusic\\CachePath.ini");
 		GetPrivateProfileString("Cache","Path",0,QQPlayer,len,AppDataPath);
+		if(strlen(QQPlayer)<3)
+		{
+			MessageBoxW(m_hWnd,L"程序没有找到您电脑上的QQ音乐缓存目录。",L"QQ音乐缓存提取工具",MB_OK + MB_ICONINFORMATION);
+			ExitProcess(0);
+			return false;
+		}
 	}
 	if(RegQueryValueEx(hkey, "WhirlCachePath", 0, 0,(unsigned char*)&QZonePlayer, &len) != ERROR_SUCCESS )
 	{
