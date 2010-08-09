@@ -163,7 +163,11 @@ BOOL CQQDlg::OnInitDialog()
 	
 	//获得文件大小信息
 	size1 = size2 = 0;
-	
+	isrun = false;
+	isok = false;
+	list1.RemoveAll();
+	list2.RemoveAll();
+
 	HKEY hkey; unsigned long len=1024;
 	RegOpenKeyEx(HKEY_LOCAL_MACHINE, "SOFTWARE\\Tencent\\QQMusic", 0, KEY_ALL_ACCESS, &hkey);
 	
@@ -197,6 +201,8 @@ BOOL CQQDlg::OnInitDialog()
 	((CButton *)GetDlgItem(IDC_CHECK3))->SetCheck(TRUE);
 	ChangeCheck();
 	
+	
+	((CButton *)GetDlgItem(IDC_CHECK1))->SetCheck(TRUE);
 	((CButton *)GetDlgItem(IDC_CHECK4))->SetCheck(TRUE);
 	((CButton *)GetDlgItem(IDC_CHECK6))->SetCheck(TRUE);
 	GetDlgItem(IDC_EDIT3)->SetWindowText("%A - %T");
@@ -341,47 +347,83 @@ void CQQDlg::OnButton1()
 	getpath(path,"请选择保存目录");
 	if(path[0]!=0) GetDlgItem(IDC_EDIT5)->SetWindowText(path);
 }
-void CQQDlg::OnOK() 
+//
+UINT CQQDlg::ThreadProc(LPVOID pParam)
 {
-	//创建保存目录
+	CQQDlg * pTaskMain = (CQQDlg *) pParam;
+	
 	char save[1024];
 	wchar_t format[128];
-	GetWindowTextW(::GetDlgItem(m_hWnd, IDC_EDIT3), format, 128);
+	GetWindowTextW(::GetDlgItem(pTaskMain->m_hWnd, IDC_EDIT3), format, 128);
 	
-	GetDlgItem(IDC_EDIT5)->GetWindowText(save,1024);
+	pTaskMain->GetDlgItem(IDC_EDIT5)->GetWindowText(save,1024);
 	if(save[strlen(save)-1]!='\\') strcat(save,"\\");
 	mkdirEx(save);
 	
 	CStringList list;
-	if(((CButton *)GetDlgItem(IDC_CHECK2))->GetCheck())
+	if(((CButton *)pTaskMain->GetDlgItem(IDC_CHECK2))->GetCheck())
 	{
-		list.AddTail(&list1);
+		list.AddTail(&pTaskMain->list1);
 	}
-	if(((CButton *)GetDlgItem(IDC_CHECK3))->GetCheck())
+	if(((CButton *)pTaskMain->GetDlgItem(IDC_CHECK3))->GetCheck())
 	{
-		list.AddTail(&list2);
+		list.AddTail(&pTaskMain->list2);
 	}
 	int nCount=list.GetCount();
 	for(int i=0;i<nCount;i++)
 	{
 		char *temp;
 		temp = decrypt(list.GetAt(list.FindIndex(i)),save);
-		if(((CButton *)GetDlgItem(IDC_CHECK6))->GetCheck())
+		if(((CButton *)pTaskMain->GetDlgItem(IDC_CHECK6))->GetCheck())
 		{
 			//改名
 			GetWmaTag(temp,format,save);
 		}
-		((CProgressCtrl*)GetDlgItem(IDC_PROGRESS1))->SetPos(i+1);
+		((CProgressCtrl*)pTaskMain->GetDlgItem(IDC_PROGRESS1))->SetPos(i+1);
 	}
 	//删除文件夹
-	if(((CButton *)GetDlgItem(IDC_CHECK4))->GetCheck())
+	if(((CButton *)pTaskMain->GetDlgItem(IDC_CHECK4))->GetCheck())
 	{
-		if(((CButton *)GetDlgItem(IDC_CHECK2))->GetCheck()) Recycle(QQPlayer,((CButton *)GetDlgItem(IDC_CHECK5))->GetCheck());
-		if(((CButton *)GetDlgItem(IDC_CHECK3))->GetCheck()) Recycle(QZonePlayer,((CButton *)GetDlgItem(IDC_CHECK5))->GetCheck());
+		if(((CButton *)pTaskMain->GetDlgItem(IDC_CHECK2))->GetCheck()) Recycle(pTaskMain->QQPlayer,((CButton *)pTaskMain->GetDlgItem(IDC_CHECK5))->GetCheck());
+		if(((CButton *)pTaskMain->GetDlgItem(IDC_CHECK3))->GetCheck()) Recycle(pTaskMain->QZonePlayer,((CButton *)pTaskMain->GetDlgItem(IDC_CHECK5))->GetCheck());
 	}
-	MessageBoxW(m_hWnd,L"任务全部完成，程序将会退出并且打开提取目录。",L"QQ音乐缓存提取工具",MB_OK + MB_ICONINFORMATION);
-	::ShellExecute(NULL, "open", save,NULL,NULL,SW_SHOW); 
-	ExitProcess(0);
-	CDialog::OnOK();
+	//MessageBoxW(pTaskMain->m_hWnd,L"任务全部完成，程序将会退出并且打开提取目录。",L"QQ音乐缓存提取工具",MB_OK + MB_ICONINFORMATION);
+	if(((CButton *)pTaskMain->GetDlgItem(IDC_CHECK1))->GetCheck()) ::ShellExecute(NULL, "explore", save,NULL,NULL,SW_SHOW);
+	pTaskMain->isok=true;
+	pTaskMain->OnOK();
+	pTaskMain->OnInitDialog();
+	return 0;
+}
+void CQQDlg::OnOK() 
+{
+	if(!isrun)
+	{
+		isrun = true;
+		static char stop[]="停止";
+		GetDlgItem(IDOK)->SetWindowText(stop);
+		pThread = AfxBeginThread(ThreadProc,this,THREAD_PRIORITY_BELOW_NORMAL ,   0,   0,   NULL);
+		//
+		((CButton *)GetDlgItem(IDC_CHECK2))->EnableWindow(false);
+		((CButton *)GetDlgItem(IDC_CHECK3))->EnableWindow(false);
+		((CButton *)GetDlgItem(IDC_CHECK4))->EnableWindow(false);
+		((CButton *)GetDlgItem(IDC_CHECK5))->EnableWindow(false);
+		((CButton *)GetDlgItem(IDC_CHECK6))->EnableWindow(false);
+		((CButton *)GetDlgItem(IDC_BUTTON1))->EnableWindow(false);
+	}
+	else
+	{
+		isrun = false;
+		static char start[]="开始";
+		GetDlgItem(IDOK)->SetWindowText(start);
+		((CButton *)GetDlgItem(IDC_CHECK2))->EnableWindow(true);
+		((CButton *)GetDlgItem(IDC_CHECK3))->EnableWindow(true);
+		((CButton *)GetDlgItem(IDC_CHECK4))->EnableWindow(true);
+		((CButton *)GetDlgItem(IDC_CHECK5))->EnableWindow(true);
+		((CButton *)GetDlgItem(IDC_CHECK6))->EnableWindow(true);
+		((CButton *)GetDlgItem(IDC_BUTTON1))->EnableWindow(true);
+		((CProgressCtrl*)GetDlgItem(IDC_PROGRESS1))->SetPos(0);
+		if(!isok) TerminateThread(pThread->m_hThread , 0); 
+	}
+	//CDialog::OnOK();
 }
 

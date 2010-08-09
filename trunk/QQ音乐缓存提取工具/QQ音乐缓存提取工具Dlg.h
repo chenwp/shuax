@@ -16,7 +16,7 @@ class CQQDlg : public CDialog
 // Construction
 public:
 	CQQDlg(CWnd* pParent = NULL);	// standard constructor
-
+	static UINT ThreadProc(LPVOID pParam);
 // Dialog Data
 	//{{AFX_DATA(CQQDlg)
 	enum { IDD = IDD_QQ_DIALOG };
@@ -41,6 +41,9 @@ protected:
 	float size1;
 	float size2;
 	void ChangeCheck();
+	bool isrun;
+	bool isok;
+	CWinThread *pThread;
 	// Generated message map functions
 	//{{AFX_MSG(CQQDlg)
 	virtual BOOL OnInitDialog();
