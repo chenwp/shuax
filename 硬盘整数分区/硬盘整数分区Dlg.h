@@ -16,7 +16,9 @@ class CMyDlg : public CDialog
 // Construction
 public:
 	CMyDlg(CWnd* pParent = NULL);	// standard constructor
-
+	
+	int FAT32(int GB);
+	int NTFS(int GB);
 // Dialog Data
 	//{{AFX_DATA(CMyDlg)
 	enum { IDD = IDD_MY_DIALOG };
