@@ -12,13 +12,20 @@ static char THIS_FILE[] = __FILE__;
 #endif
 
 
-int FAT32(int GB)
+int CMyDlg::FAT32(int GB)
 {
 	if(GB==0) return GB;
+	if(GB>=32)
+	{
+		((CButton *)GetDlgItem(IDC_RADIO1))->SetCheck(true);
+		((CButton *)GetDlgItem(IDC_RADIO2))->SetCheck(false);
+		OnChangeEdit1();
+		return NTFS(GB);
+	}
 	GB = (GB-1)*4+1024*GB;
 	return GB;
 }
-int NTFS(int GB)
+int CMyDlg::NTFS(int GB)
 {
 	static double ZHU = 512.0*255.0*63.0/1024.0/1024.0;
 	if(GB==0) return GB;
