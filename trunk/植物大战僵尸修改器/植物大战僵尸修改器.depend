@@ -1,0 +1,11 @@
+# depslib dependency file v1.0
+1282030702 source:c:\users\shuax\documents\植物大战僵尸修改器\main.cpp
+	<windows.h>
+	"resource.h"
+
+1281963602 c:\users\shuax\documents\植物大战僵尸修改器\resource.h
+	<windows.h>
+
+1282028822 source:c:\users\shuax\documents\植物大战僵尸修改器\resource.rc
+	"resource.h"
+
