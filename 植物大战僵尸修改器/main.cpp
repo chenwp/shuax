@@ -40,7 +40,6 @@ void InitChina()
     ad.dwSunBase = 0x0041BA76;
 
     ad.Coo1 = 0x144;
-    ad.Coo2 = 0x28;
     ad.CooBase = 0x00488F7D;
 
     ad.dwCollect = 0x0040CB4B;
@@ -66,7 +65,6 @@ void InitYear()
 
 
     ad.Coo1 = 0x15C;
-    ad.Coo2 = 0x70;
     ad.CooBase = 0x004B4CA1;
 
     ad.dwCollect = 0x0044C5F2;
@@ -146,25 +144,13 @@ bool Cooling()
             //
 			for(DWORD i=0;i<dwCount;i++)
 			{
-				DWORD dwTmp = dwValue + ad.Coo2 + i*0x50;
-				if(ad.Coo2==0x70)
-				{
-                    BYTE dwTmp2 = 1;
-                    ::WriteProcessMemory(hProcess, (LPVOID)dwTmp, &dwTmp2, sizeof(BYTE), NULL);
-				}
-                else
-                {
-                    DWORD dwTmp2 = 0;
-                    dwBase = dwTmp + 0x28;
-
-                    ::ReadProcessMemory(hProcess, (LPVOID)dwBase, &dwTmp2, sizeof(DWORD), NULL);
-                    dwBase = dwTmp + 0x24;
-                    ::WriteProcessMemory(hProcess, (LPVOID)dwBase, &dwTmp2, sizeof(DWORD), NULL);
-                }
+				DWORD dwTmp = dwValue + 0x70 + i*0x50;
+                BYTE dwTmp2 = 1;
+                ::WriteProcessMemory(hProcess, (LPVOID)dwTmp, &dwTmp2, sizeof(BYTE), NULL);
 			}
 			//
 			dwBase = ad.CooBase; //»ùÖ·
-			if(ad.Coo2==0x70)
+			if(ad.Coo1==0x15C)
 			{
                 BYTE dwFill[] = {0xC6, 0x45, 0x48, 0x01};
                 ::WriteProcessMemory(hProcess, (LPVOID)dwBase, &dwFill, sizeof(dwFill), false);
@@ -186,7 +172,7 @@ bool AutoCollect()
 	if (hProcess != NULL)
 	{
 		DWORD dwBase = ad.dwCollect;
-		if(ad.Coo2==0x70)
+		if(ad.Coo1==0x15C)
 		{
 			BYTE dwFill[] = {0xEB, 0x09};
 			::WriteProcessMemory(hProcess, (LPVOID)dwBase, &dwFill, sizeof(dwFill), false);

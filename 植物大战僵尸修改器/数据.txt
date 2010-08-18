@@ -1,0 +1,77 @@
+a0 怪物
+0x5560 阳光
+
+
+
+
+EBP=1203B1A8
+
+00531319 - mov [ebp+000000c8],edi
+
+
++2C X坐标 
++30 Y坐标 
++C8 当前血量 
++CC 最大血量 
++1c 第几行 
++18 是否可见 
++11C 怪物的大小 
+
+[15C]
+117604F0
+11760394
+11760238
+
+
+01b82880
+
+120BA04C
+ebx:6a9ec0
+
+
+
+function GetMonsterBase(pMonBase:Pointer):Pointer;
+begin
+asm
+    pushad
+    mov esi, pMonBase
+
+    mov edx, pGameBase//游戏基址
+    mov edi, $0041C8F0
+    call edi//获取一个怪物地址
+
+    popad
+end;
+
+
+
+
+0041C8F0 - 57                         - push edi
+0041C8F1 - bf 00 00 ff ff             - mov edi,ffff0000
+0041C8F6 - 8b 06                      - mov eax,[esi]
+0041C8F8 - 85 c0                      - test eax,eax
+0041C8FA - 75 08                      - jne 0041c904
+0041C8FC - 8b 82 90 00 00 00          - mov eax,[edx+00000090]
+0041C902 - eb 05                      - jmp 0041c909
+0041C904 - 05 5c 01 00 00             - add eax,0000015c
+0041C909 - 8b 8a 94 00 00 00          - mov ecx,[edx+00000094]
+0041C90F - 69 c9 5c 01 00 00          - imul ecx,ecx,0000015c
+0041C915 - 03 8a 90 00 00 00          - add ecx,[edx+00000090]
+0041C91B - 3b c1                      - cmp eax,ecx
+0041C91D - 73 12                      - jae 0041c931
+0041C91F - 90                         - nop
+0041C920 - 85 b8 58 01 00 00          - test [eax+00000158],edi
+0041C926 - 75 13                      - jne 0041c93b
+0041C928 - 05 5c 01 00 00             - add eax,0000015c
+0041C92D - 3b c1                      - cmp eax,ecx
+0041C92F - 72 ef                      - jb 0041c920
+0041C931 - c7 06 ff ff ff ff          - mov [esi],ffffffff
+0041C937 - 32 c0                      - xor al,al
+0041C939 - 5f                         - pop edi
+0041C93A - c3                         - ret
+0041C93B - 89 06                      - mov [esi],eax
+0041C93D - 80 b8 ec 00 00 00 00       - cmp byte ptr [eax+000000ec],00
+0041C944 - 75 b0                      - jne 0041c8f6
+0041C946 - b0 01                      - mov al,01
+0041C948 - 5f                         - pop edi
+0041C949 - c3                         - ret
