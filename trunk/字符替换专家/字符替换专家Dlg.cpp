@@ -182,7 +182,7 @@ void CMyDlg::A2Hex(int nlDDlgltem1, int nlDDlgltem2)
 	
 	for (int i = 0; src[i] != 0; i++)
 	{
-		::wsprintf(node, "%02X", src[i]);
+		::wsprintf(node, "%02X", (unsigned char)src[i]);
 		::strcat(temp, node);
 	}
 	strcpy(src,temp);
