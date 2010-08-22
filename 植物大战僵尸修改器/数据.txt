@@ -22,7 +22,7 @@ EBP=1203B1A8
 11760394
 11760238
 
-
+159fff70
 01b82880
 
 120BA04C
@@ -41,6 +41,9 @@ asm
     call edi//获取一个怪物地址
 
     popad
+end;
+
+Result:= Pointer(pMonBase^);
 end;
 
 
