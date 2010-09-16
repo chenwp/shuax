@@ -10,6 +10,7 @@
 #define FindH                           1002
 #define PartCase                        1004
 #define Regex                           1005
+#define Folder                          1005
 #define Replace                         1007
 #define exit                            1008
 #define ReplaceA                        1009
@@ -18,6 +19,8 @@
 #define FilePath                        1012
 #define KeepSize                        1013
 #define Ask                             1014
+#define Find8                           1015
+#define Replace8                        1016
 
 // Next default values for new objects
 // 
@@ -25,7 +28,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        130
 #define _APS_NEXT_COMMAND_VALUE         32771
-#define _APS_NEXT_CONTROL_VALUE         1015
+#define _APS_NEXT_CONTROL_VALUE         1017
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

@@ -33,16 +33,19 @@ public:
 protected:
 	HICON m_hIcon;
 	
-
-	
+	void BrowseDir(CString strDir);
+	void SetFileType(char *path);
 	void FormatHex(char *src);
 	void H2Hex(int nlDDlgltem);
 	void A2Hex(int nlDDlgltem1, int nlDDlgltem2);
 	void U2Hex(int nlDDlgltem1, int nlDDlgltem2);
+	void T2Hex(int nlDDlgltem1, int nlDDlgltem2);
 	int GetHexValue(char *src);
+	
 	void H2UNICODE(int nlDDlgltem1, int nlDDlgltem2);
 	void H2ASCII(int nlDDlgltem1, int nlDDlgltem2);
-
+	void H2UTF8(int nlDDlgltem1, int nlDDlgltem2);
+	void SearchFile(char *path,bool files);
 	bool is_edit;
 	// Generated message map functions
 	//{{AFX_MSG(CMyDlg)
@@ -60,6 +63,10 @@ protected:
 	afx_msg void OnReplace();
 	afx_msg void OnBrowse();
 	afx_msg void OnDropFiles(HDROP hDropInfo);
+	afx_msg void OnChangeFind8();
+	afx_msg void OnChangeReplace8();
+	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
+	afx_msg BOOL OnHelpInfo(HELPINFO* pHelpInfo);
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };

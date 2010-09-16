@@ -1,0 +1,37 @@
+# depslib dependency file v1.0
+1283072908 source:c:\users\shuax\documents\通用游戏修改器\main.cpp
+	<windows.h>
+	<tlhelp32.h>
+	"lib\xmlParser.cpp"
+	<conio.h>
+	"config.h"
+	"function.h"
+	<GdiPlus.h>
+
+1282973591 c:\users\shuax\documents\通用游戏修改器\lib\xmlparser.cpp
+	"xmlParser.h"
+	<Windows.h>
+	<memory.h>
+	<assert.h>
+	<stdio.h>
+	<string.h>
+	<stdlib.h>
+	<widec.h>
+	<wctype.h>
+	<widec.h>
+
+1277629505 c:\users\shuax\documents\通用游戏修改器\lib\xmlparser.h
+	<stdlib.h>
+	<tchar.h>
+	<wchar.h>
+
+1282982891 c:\users\shuax\documents\通用游戏修改器\config.cpp
+	<windows.h>
+	"lib\xmlParser.cpp"
+
+1282991946 source:c:\users\shuax\documents\通用游戏修改器\resource.rc
+
+1283068202 c:\users\shuax\documents\通用游戏修改器\config.h
+
+1283070779 c:\users\shuax\documents\通用游戏修改器\function.h
+
