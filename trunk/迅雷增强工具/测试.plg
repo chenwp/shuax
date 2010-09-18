@@ -1,0 +1,41 @@
+<html>
+<body>
+<pre>
+<h1>Build Log</h1>
+<h3>
+--------------------Configuration: 测试 - Win32 Release--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating command line "rc.exe /l 0x804 /fo"Release/测试.res" /d "NDEBUG" /d "_AFXDLL" "D:\原创软件\MFC\迅雷增强工具\测试.rc"" 
+Creating temporary file "C:\Users\Shu\AppData\Local\Temp\RSP5A6C.tmp" with contents
+[
+/nologo /MD /W3 /GX /O1 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /FR"Release/" /Fp"Release/测试.pch" /Yu"stdafx.h" /Fo"Release/" /Fd"Release/" /FD /c 
+"D:\原创软件\MFC\迅雷增强工具\测试.cpp"
+"D:\原创软件\MFC\迅雷增强工具\测试Dlg.cpp"
+]
+Creating command line "cl.exe @C:\Users\Shu\AppData\Local\Temp\RSP5A6C.tmp" 
+Creating temporary file "C:\Users\Shu\AppData\Local\Temp\RSP5A6D.tmp" with contents
+[
+/nologo /MD /W3 /GX /O1 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /FR"Release/" /Fp"Release/测试.pch" /Yc"stdafx.h" /Fo"Release/" /Fd"Release/" /FD /c 
+"D:\原创软件\MFC\迅雷增强工具\StdAfx.cpp"
+]
+Creating command line "cl.exe @C:\Users\Shu\AppData\Local\Temp\RSP5A6D.tmp" 
+Creating command line "link.exe /nologo /subsystem:windows /incremental:no /pdb:"Release/测试.pdb" /machine:I386 /out:"Release/测试.exe"  ".\Release\StdAfx.obj" ".\Release\测试.obj" ".\Release\测试Dlg.obj" ".\Release\测试.res" "
+<h3>Output Window</h3>
+Compiling resources...
+Compiling...
+StdAfx.cpp
+Compiling...
+测试.cpp
+测试Dlg.cpp
+D:\原创软件\MFC\迅雷增强工具\测试Dlg.cpp(114) : warning C4244: 'argument' : conversion from 'int' to 'float', possible loss of data
+Generating Code...
+Linking...
+
+
+
+<h3>Results</h3>
+测试.exe - 0 error(s), 0 warning(s)
+</pre>
+</body>
+</html>
