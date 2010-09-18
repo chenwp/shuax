@@ -1,0 +1,14 @@
+c:\users\shuax\documents\visual studio 2010\Projects\QQMusic\QQMusic\bin\Debug\QQMusic.exe
+c:\users\shuax\documents\visual studio 2010\Projects\QQMusic\QQMusic\bin\Debug\QQMusic.pdb
+c:\users\shuax\documents\visual studio 2010\Projects\QQMusic\QQMusic\obj\x86\Debug\ResolveAssemblyReference.cache
+c:\users\shuax\documents\visual studio 2010\Projects\QQMusic\QQMusic\obj\x86\Debug\MainWindow.baml
+c:\users\shuax\documents\visual studio 2010\Projects\QQMusic\QQMusic\obj\x86\Debug\MainWindow.g.cs
+c:\users\shuax\documents\visual studio 2010\Projects\QQMusic\QQMusic\obj\x86\Debug\App.g.cs
+c:\users\shuax\documents\visual studio 2010\Projects\QQMusic\QQMusic\obj\x86\Debug\QQMusic_MarkupCompile.cache
+c:\users\shuax\documents\visual studio 2010\Projects\QQMusic\QQMusic\obj\x86\Debug\QQMusic.g.resources
+c:\users\shuax\documents\visual studio 2010\Projects\QQMusic\QQMusic\obj\x86\Debug\QQMusic.Properties.Resources.resources
+c:\users\shuax\documents\visual studio 2010\Projects\QQMusic\QQMusic\obj\x86\Debug\GenerateResource.read.1.tlog
+c:\users\shuax\documents\visual studio 2010\Projects\QQMusic\QQMusic\obj\x86\Debug\GenerateResource.write.1.tlog
+c:\users\shuax\documents\visual studio 2010\Projects\QQMusic\QQMusic\obj\x86\Debug\QQMusic.exe
+c:\users\shuax\documents\visual studio 2010\Projects\QQMusic\QQMusic\obj\x86\Debug\QQMusic.pdb
+c:\users\shuax\documents\visual studio 2010\Projects\QQMusic\QQMusic\bin\Debug\QQMusic.exe.config

@@ -1,0 +1,15 @@
+﻿<Page x:Class="QQMusic.Page2"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      mc:Ignorable="d"
+	Title="Page2" Height="227" Width="501">
+    <Grid>
+        <Button Template="{StaticResource temp_b_top_close}" Height="24" Width="24" Name="close" Margin="424,-8,-19,165" Click="close_Click" />
+        <Label Content="修改状态：" Height="30" HorizontalAlignment="Left" Margin="33,53,0,0" VerticalAlignment="Top" FontSize="14" Foreground="WhiteSmoke" Width="179" />
+        <Image Height="16" HorizontalAlignment="Left" Margin="234,177,0,0" Name="image1" Stretch="Fill" VerticalAlignment="Top" Width="32" Source="/QQMusic;component/Images/up.png" MouseDown="image1_MouseDown"/>
+        <Label Content="QQ音乐去广告工具" FontSize="20" Foreground="White" Height="36" HorizontalAlignment="Left" Margin="12,11,0,0" Name="title" VerticalAlignment="Top" Width="200" />
+        <TextBlock TextWrapping="WrapWithOverflow" Height="79" HorizontalAlignment="Left" Margin="57,89,0,0" Name="textBlock1" Text="" VerticalAlignment="Top" Width="419" Foreground="White" />
+    </Grid>
+</Page>
