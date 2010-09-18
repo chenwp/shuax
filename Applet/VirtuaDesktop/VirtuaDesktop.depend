@@ -1,0 +1,14 @@
+# depslib dependency file v1.0
+1281496040 source:c:\users\shuax\documents\virtuadesktop\resource.rc
+
+1281512142 source:c:\users\shuax\documents\virtuadesktop\main.cpp
+	<windows.h>
+	<GdiPlus.h>
+	"lib\VirtualDesktop.cpp"
+
+1281512229 c:\users\shuax\documents\virtuadesktop\lib\virtualdesktop.cpp
+	"stdlib.h"
+	"LinkList.h"
+
+1257381748 c:\users\shuax\documents\virtuadesktop\lib\linklist.h
+

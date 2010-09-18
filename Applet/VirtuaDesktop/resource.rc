@@ -1,0 +1,10 @@
+A ICON MOVEABLE PURE LOADONCALL DISCARDABLE "res\\desktop.ico"
+1 24      DISCARDABLE     "res\\style.bin"
+
+1 PNG "res\\Button.png"
+2 PNG "res\\Selected.png"
+
+3 PNG "res\\Remove.png"
+4 PNG "res\\Add.png"
+5 PNG "res\\Switch.png"
+6 PNG "res\\Stop.png"
