@@ -17,7 +17,7 @@ int award;//½±Àø
 POINT award_loca;//½±Àø×ø±ê
 
 //³õÊ¼»¯Ì°³ÔÉß
-void InitSnake(char* src)
+void InitSnake()
 {
 	Orientation = rand() % 4;
 	
@@ -36,7 +36,7 @@ void InitSnake(char* src)
 	SnakeNodeList temp = Head;
 	while (temp)
 	{
-		DrawString(temp->Location.x, temp->Location.y, src);
+		DrawString(temp->Location.x, temp->Location.y, "¡ò");
 		temp = temp->next;
 	}
 }

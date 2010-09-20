@@ -8,8 +8,7 @@
 
 void DispatchMessage()
 {
-	InitSnake("¡ò");
-	//InitSnake("¡ö");
+	InitSnake();
 	InitWall();
 
 	while (1)
