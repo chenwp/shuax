@@ -27,7 +27,7 @@ void InitGUI()
 	HWND hwnd = FindWindow("ConsoleWindowClass", "贪吃蛇");
 	if (hwnd != NULL)
 	{
-		//动态加载DWMAPI，使得窗口玻璃化
+		//动态加载DWMAPI，使得窗口玻璃化，VISTA以上系统适用
 		HINSTANCE hFuncInst = LoadLibrary("dwmapi.DLL");
 		if (hFuncInst != NULL)
 		{
@@ -59,7 +59,6 @@ void DrawString(int x, int y, const char* format, ...)
 	va_start(arg, format);
 	vprintf(format, arg);
 	va_end(arg);
-
 }
 
 void InitWall()

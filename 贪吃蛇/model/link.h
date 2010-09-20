@@ -15,7 +15,6 @@ typedef struct SnakeNode
 SnakeNodeList Head;
 SnakeNodeList Tail;
 
-//创建贪吃蛇链表（头，尾，坐标，方向，长度）
 void CreateSnakeNodeList(SnakeNodeList &head, SnakeNodeList &tail, POINT Location, int Orientation, int Length)
 {
 	head = (SnakeNodeList)malloc(sizeof(SnakeNode));
