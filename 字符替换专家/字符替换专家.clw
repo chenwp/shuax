@@ -26,14 +26,14 @@ Type=0
 BaseClass=CDialog
 HeaderFile=×Ö·ûÌæ»»×¨¼ÒDlg.h
 ImplementationFile=×Ö·ûÌæ»»×¨¼ÒDlg.cpp
-LastObject=Ask
+LastObject=IDC_LINK
 Filter=D
 VirtualFilter=dWC
 
 [DLG:IDD_MY_DIALOG]
 Type=1
 Class=CMyDlg
-ControlCount=27
+ControlCount=28
 Control1=FilePath,edit,1350631552
 Control2=Browse,button,1342242816
 Control3=Folder,button,1342243075
@@ -61,4 +61,5 @@ Control24=IDC_STATIC,static,1342308354
 Control25=IDC_STATIC,static,1342308354
 Control26=IDC_STATIC,static,1342308354
 Control27=IDC_STATIC,static,1476526092
+Control28=IDC_NOP,button,1342242819
 

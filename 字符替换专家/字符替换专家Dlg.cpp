@@ -159,7 +159,10 @@ BOOL CMyDlg::OnInitDialog()
 	DragAcceptFiles(TRUE);
 	if(__argc!=1) SetFileType(__argv[1]);
 	is_edit = false;
+
 	((CButton *)GetDlgItem(Ask))->SetCheck(TRUE);
+	((CButton *)GetDlgItem(IDC_NOP))->SetCheck(TRUE);
+	
 	
 	((CEdit*)GetDlgItem(FindH))->SetLimitText(1024);
 	((CEdit*)GetDlgItem(FindA))->SetLimitText(1024);
@@ -245,6 +248,7 @@ void CMyDlg::FormatHex(char *src)
 			src[j++] = ' ';
 		}
 	}
+	
 	src[j] = 0;
 }
 void CMyDlg::H2Hex(int nlDDlgltem)
@@ -270,6 +274,8 @@ void CMyDlg::A2Hex(int nlDDlgltem1, int nlDDlgltem2)
 	}
 	strcpy(src,temp);
 	FormatHex(src);
+	if(((CButton *)GetDlgItem(IDC_NOP))->GetCheck()) strcat(src," 00");
+
 	GetDlgItem(nlDDlgltem2)->SetWindowText(src);
 }
 void CMyDlg::T2Hex(int nlDDlgltem1, int nlDDlgltem2)
@@ -286,6 +292,7 @@ void CMyDlg::T2Hex(int nlDDlgltem1, int nlDDlgltem2)
 	}
 	strcpy(src,temp);
 	FormatHex(src);
+	if(((CButton *)GetDlgItem(IDC_NOP))->GetCheck()) strcat(src," 00");
 	GetDlgItem(nlDDlgltem2)->SetWindowText(src);
 }
 void CMyDlg::U2Hex(int nlDDlgltem1, int nlDDlgltem2)
@@ -304,7 +311,7 @@ void CMyDlg::U2Hex(int nlDDlgltem1, int nlDDlgltem2)
 		::wsprintfW(_node, L"%02X%02X", _src[i]&0xFF, _src[i] >> 8);
 		::wcscat(_temp, _node);
 	}
-	
+	if(((CButton *)GetDlgItem(IDC_NOP))->GetCheck()) wcscat(_temp,L" 00 00");
 	SetWindowTextW(::GetDlgItem(m_hWnd, nlDDlgltem2), _temp);
 	H2Hex(nlDDlgltem2);
 }

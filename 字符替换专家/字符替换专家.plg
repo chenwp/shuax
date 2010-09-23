@@ -6,12 +6,12 @@
 --------------------Configuration: 字符替换专家 - Win32 Release--------------------
 </h3>
 <h3>Command Lines</h3>
-Creating temporary file "C:\Users\shuax\AppData\Local\Temp\RSPD752.tmp" with contents
+Creating temporary file "C:\Users\shuax\AppData\Local\Temp\RSPF5C1.tmp" with contents
 [
 /nologo /MD /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /FR"Release/" /Fp"Release/字符替换专家.pch" /Yu"stdafx.h" /Fo"Release/" /Fd"Release/" /FD /c 
-"C:\Users\shuax\Desktop\字符替换专家\字符替换专家Dlg.cpp"
+"F:\代码备份\shuax\字符替换专家\字符替换专家Dlg.cpp"
 ]
-Creating command line "cl.exe @C:\Users\shuax\AppData\Local\Temp\RSPD752.tmp" 
+Creating command line "cl.exe @C:\Users\shuax\AppData\Local\Temp\RSPF5C1.tmp" 
 Creating command line "link.exe /nologo /subsystem:windows /incremental:no /pdb:"Release/字符替换专家.pdb" /machine:I386 /out:"Release/字符替换专家.exe"  ".\Release\StdAfx.obj" ".\Release\字符替换专家.obj" ".\Release\字符替换专家Dlg.obj" ".\Release\字符替换专家.res" "
 <h3>Output Window</h3>
 Compiling...

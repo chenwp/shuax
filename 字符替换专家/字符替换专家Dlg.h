@@ -67,6 +67,7 @@ protected:
 	afx_msg void OnChangeReplace8();
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
 	afx_msg BOOL OnHelpInfo(HELPINFO* pHelpInfo);
+	afx_msg void OnLink();
 	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };
