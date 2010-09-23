@@ -109,8 +109,10 @@ BEGIN
     RTEXT           "Path",IDC_STATIC,13,16,31,8
     RTEXT           "UTF-8",IDC_STATIC,24,63,20,8
     RTEXT           "UTF-8",IDC_STATIC,23,148,20,8
-    CONTROL         "获得帮助请访问：www.shuax.com",IDC_STATIC,"Static",
-                    SS_LEFTNOWORDWRAP | WS_DISABLED | WS_GROUP,7,206,108,8
+    CONTROL         "www.shuax.com",IDC_STATIC,"Static",SS_LEFTNOWORDWRAP | 
+                    WS_DISABLED | WS_GROUP,7,206,53,8
+    CONTROL         "完整字符串",IDC_NOP,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,82,205,50,10
 END
 
 
