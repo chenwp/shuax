@@ -1,0 +1,19 @@
+# depslib dependency file v1.0
+1287060245 source:c:\users\shuax\documents\mouseenhancer\mouseenhancer.cpp
+	<windows.h>
+	<tchar.h>
+	<conio.h>
+	"settings.cpp"
+
+1286769469 source:c:\users\shuax\documents\mouseenhancer\resource.rc
+
+1287030872 source:c:\users\shuax\documents\mouseenhancer\settings.cpp
+
+1287030761 source:c:\users\shuax\documents\mouseenhancer\settings.hpp
+
+1287030761 c:\users\shuax\documents\mouseenhancer\settings.hpp
+
+1287059977 c:\users\shuax\documents\mouseenhancer\settings.cpp
+	<windows.h>
+	<shlwapi.h>
+
