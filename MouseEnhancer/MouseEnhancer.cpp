@@ -7,7 +7,8 @@
 #include <tchar.h>
 #include <conio.h>
 #include <math.h>
-TCHAR szClass[] = _T("鼠标增强器 - MouseEnhancer");
+
+TCHAR szClass[] = _T("鼠标增强器 - MouseEnhancer v1.1");
 
 #include "settings.cpp"
 
@@ -54,7 +55,7 @@ LRESULT CALLBACK LowLevelMouseProc(int nCode, WPARAM wParam, LPARAM lParam)
             if(nowDest!=oldDest && nowTime<myset.t_Whl) return 1;
             oldDest = nowDest;
 
-            if((GetKeyState(VK_MENU)& 0x8000)!=0 && myset.isVol)
+            if((GetKeyState(myset.MyKey)& 0x8000)!=0 && myset.isVol)
             {
                 //ctrl down
                 short zDelta = (short)HIWORD(pmouse->mouseData);
@@ -80,7 +81,7 @@ LRESULT CALLBACK LowLevelMouseProc(int nCode, WPARAM wParam, LPARAM lParam)
             break;
         case WM_RBUTTONDOWN:
             //
-            if((GetKeyState(VK_MENU)& 0x8000)!=0 && myset.isGus)
+            if((GetKeyState(myset.MyKey)& 0x8000)!=0 && myset.isGus)
             {
                 startPoint = pmouse->pt;
                 return 1;
@@ -99,7 +100,7 @@ LRESULT CALLBACK LowLevelMouseProc(int nCode, WPARAM wParam, LPARAM lParam)
             }
             break;
         case WM_RBUTTONUP:
-            if((GetKeyState(VK_MENU)& 0x8000)!=0 && myset.isGus)
+            if((GetKeyState(myset.MyKey)& 0x8000)!=0 && myset.isGus)
             {
 
                 endPoint = pmouse->pt;
@@ -261,7 +262,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
             DestroyWindow(hwnd);
             break;
         case SWM_HELP:
-            MessageBox(hwnd,_T("鼠标增强器 v1.0\n\n本软件是免费软件！任何人不能用于盈利。\n更多信息请访问：www.shuax.com"),szClass,MB_OK | MB_ICONINFORMATION);
+            MessageBox(hwnd,_T("鼠标增强器 - MouseEnhancer v1.1\n\n本软件是免费软件！任何人不能用于盈利。\n更多信息请访问：www.shuax.com"),szClass,MB_OK | MB_ICONINFORMATION);
             InvalidateRect(hwnd, NULL, false);
             break;
         default:
