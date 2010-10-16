@@ -19,14 +19,14 @@
 
 1286769469 source:f:\代码备份\shuax\mouseenhancer\resource.rc
 
-1287204143 source:f:\代码备份\shuax\mouseenhancer\mouseenhancer.cpp
+1287231674 source:f:\代码备份\shuax\mouseenhancer\mouseenhancer.cpp
 	<windows.h>
 	<tchar.h>
 	<conio.h>
 	<math.h>
 	"settings.cpp"
 
-1287204262 f:\代码备份\shuax\mouseenhancer\settings.cpp
+1287231045 f:\代码备份\shuax\mouseenhancer\settings.cpp
 	<windows.h>
 	<shlwapi.h>
 

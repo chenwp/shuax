@@ -8,7 +8,7 @@
 #include <conio.h>
 #include <math.h>
 
-TCHAR szClass[] = _T("鼠标增强器 - MouseEnhancer v1.1");
+TCHAR szClass[] = _T("MouseEnhancer v1.2");
 
 #include "settings.cpp"
 
@@ -18,11 +18,11 @@ HWND g_hook;
 
 NOTIFYICONDATA nid;
 
-
 #define SWM_EXIT (WM_APP+100)
 #define SWM_HELP (WM_APP+101)
 #define SWM_AUTO (WM_APP+102)
 #define SWM_SETT (WM_APP+103)
+#define SWM_REFR (WM_APP+104)
 //鼠标钩子函数
 LRESULT CALLBACK LowLevelMouseProc(int nCode, WPARAM wParam, LPARAM lParam)
 {
@@ -55,7 +55,7 @@ LRESULT CALLBACK LowLevelMouseProc(int nCode, WPARAM wParam, LPARAM lParam)
             if(nowDest!=oldDest && nowTime<myset.t_Whl) return 1;
             oldDest = nowDest;
 
-            if((GetKeyState(myset.MyKey)& 0x8000)!=0 && myset.isVol)
+            if((GetKeyState(myset.MyVol)& 0x8000)!=0 && myset.isVol)
             {
                 //ctrl down
                 short zDelta = (short)HIWORD(pmouse->mouseData);
@@ -70,7 +70,7 @@ LRESULT CALLBACK LowLevelMouseProc(int nCode, WPARAM wParam, LPARAM lParam)
                     //down
                     SendMessage(WindowFromPoint(pmouse->pt), 793, 197266, 589824);
                 }
-                break;
+                return 1;
             }
             if(myset.isWeh)
             {
@@ -102,7 +102,7 @@ LRESULT CALLBACK LowLevelMouseProc(int nCode, WPARAM wParam, LPARAM lParam)
         case WM_RBUTTONUP:
             if((GetKeyState(myset.MyKey)& 0x8000)!=0 && myset.isGus)
             {
-
+                //keybd_event(myset.MyKey,0,KEYEVENTF_KEYUP,0);
                 endPoint = pmouse->pt;
                 int x = endPoint.x-startPoint.x;
                 int y = endPoint.y-startPoint.y;
@@ -168,13 +168,13 @@ void ShowContextMenu(HWND hwnd)
     POINT pt;
     GetCursorPos(&pt);
     HMENU hMenu = CreatePopupMenu();
-    HMENU hPopMenu;
+    HMENU hPopMenu,hPopMenu2;
     int message = WM_APP + 1;
     bool isAutoRun = CheckAutoRun();
     //
-    AppendMenu(hMenu, MF_BYPOSITION | (myset.isClk?MF_CHECKED:0), message++, _T("屏蔽无效单击"));
-    AppendMenu(hMenu, MF_BYPOSITION | (myset.isRls?MF_CHECKED:0), message++, _T("屏蔽无效释放"));
-    AppendMenu(hMenu, MF_BYPOSITION | (myset.isWhl?MF_CHECKED:0), message++, _T("屏蔽无效滚动"));
+    AppendMenu(hMenu, MF_BYPOSITION | (myset.isClk?MF_CHECKED:0) | (myset.isLem?0:(myset.isRim?0:MF_DISABLED)), message++, _T("屏蔽无效单击"));
+    AppendMenu(hMenu, MF_BYPOSITION | (myset.isRls?MF_CHECKED:0) | (myset.isLem?0:(myset.isRim?0:MF_DISABLED)), message++, _T("屏蔽无效释放"));
+    AppendMenu(hMenu, MF_BYPOSITION | (myset.isWhl?MF_CHECKED:0) | (myset.isLem?0:(myset.isRim?0:MF_DISABLED)), message++, _T("屏蔽无效滚动"));
     hPopMenu = CreatePopupMenu();
     AppendMenu(hPopMenu, MF_BYPOSITION | (myset.isLem?MF_CHECKED:0), message++, L"鼠标左键");
     AppendMenu(hPopMenu, MF_BYPOSITION | (myset.isRim?MF_CHECKED:0), message++, L"鼠标右键");
@@ -187,9 +187,16 @@ void ShowContextMenu(HWND hwnd)
     AppendMenu(hMenu, MF_SEPARATOR, 0, NULL);
 
     hPopMenu = CreatePopupMenu();
+    hPopMenu2 = CreatePopupMenu();
+    AppendMenu(hPopMenu2, MF_BYPOSITION, SWM_SETT, L"手动编辑");
+    AppendMenu(hPopMenu2, MF_BYPOSITION, SWM_REFR, L"刷新设置");
+    AppendMenu(hPopMenu, MF_POPUP | MF_BYPOSITION, (UINT)hPopMenu2, _T("配置文件"));
+    AppendMenu(hPopMenu, MF_SEPARATOR, 0, NULL);
     AppendMenu(hPopMenu, MF_BYPOSITION | (myset.isIco?0:MF_CHECKED), message++, L"隐藏图标");
-    AppendMenu(hPopMenu, MF_BYPOSITION, SWM_SETT, L"手动设置");
     AppendMenu(hPopMenu, MF_BYPOSITION | (isAutoRun?MF_CHECKED:0), SWM_AUTO, L"开机启动");
+
+
+
     AppendMenu(hMenu, MF_POPUP | MF_BYPOSITION, (UINT)hPopMenu, _T("设置"));
 
 
@@ -233,7 +240,6 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
     case WM_CREATE:
 
         if(myset.isDbg) AllocConsole();
-        myset.save();
 
         if(!myset.isIco) break;
 
@@ -249,6 +255,10 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
     case WM_COMMAND:
         switch (wParam)
         {
+        case SWM_REFR:
+            myset.Init();
+            myset.save();
+            break;
         case SWM_AUTO:
             AutoStart(hwnd);
             break;
@@ -262,7 +272,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
             DestroyWindow(hwnd);
             break;
         case SWM_HELP:
-            MessageBox(hwnd,_T("鼠标增强器 - MouseEnhancer v1.1\n\n本软件是免费软件！任何人不能用于盈利。\n更多信息请访问：www.shuax.com"),szClass,MB_OK | MB_ICONINFORMATION);
+            MessageBox(hwnd,_T("MouseEnhancer v1.2\n\n本软件是免费软件！\n更多信息请访问：www.shuax.com"),szClass,MB_OK | MB_ICONINFORMATION);
             InvalidateRect(hwnd, NULL, false);
             break;
         default:
@@ -357,7 +367,8 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 {
     MSG msg;
 
-
+    myset.Init();
+    myset.save();
 
     HWND hwnd = FindWindow(szClass, szClass); //单实例运行
     if (hwnd) return 0;
