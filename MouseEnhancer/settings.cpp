@@ -128,7 +128,27 @@ void AutoStart(HWND hwnd)
 }
 void doSomething(int opr)
 {
-    HWND hwnd = GetForegroundWindow();
+    POINT pt;
+    TCHAR buff[256];
+    GetCursorPos(&pt);
+    HWND hwnd = WindowFromPoint(pt);
+
+    while(GetParent(hwnd))
+    {
+        hwnd=GetParent(hwnd);
+    }
+
+    if (!(GetWindowLong(hwnd, GWL_STYLE) & WS_VISIBLE)) return;
+
+    GetWindowText(hwnd, buff, 255);
+    if (!_tcsicmp(buff, _T("Program Manager"))) return;
+
+    GetClassName(hwnd, buff, 255);
+    if (!_tcsicmp(buff, _T("tooltips_class32"))) return;
+    if (!_tcsicmp(buff, _T("Shell_TrayWnd"))) return;
+    if (!_tcsicmp(buff, _T("WorkerW"))) return;
+
+    _cprintf("Class:%S\n",buff);
     switch(opr)
     {
         case 1:SetWindowPos(hwnd, HWND_TOPMOST,0,0,0,0,SWP_NOMOVE | SWP_NOSIZE);break;

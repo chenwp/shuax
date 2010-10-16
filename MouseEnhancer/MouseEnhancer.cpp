@@ -80,7 +80,11 @@ LRESULT CALLBACK LowLevelMouseProc(int nCode, WPARAM wParam, LPARAM lParam)
             break;
         case WM_RBUTTONDOWN:
             //
-            if((GetKeyState(VK_MENU)& 0x8000)!=0 && myset.isGus) startPoint = pmouse->pt;
+            if((GetKeyState(VK_MENU)& 0x8000)!=0 && myset.isGus)
+            {
+                startPoint = pmouse->pt;
+                return 1;
+            }
             if(!myset.isRim) break;
         case WM_LBUTTONDOWN:
             if(!myset.isLem) break;
@@ -139,6 +143,7 @@ LRESULT CALLBACK LowLevelMouseProc(int nCode, WPARAM wParam, LPARAM lParam)
                      _cprintf("Distance,orientation:\t%f,%d\n",Distance,orientation);
                      //
                      doSomething(myset.g_opr[orientation]);
+                     return 1;
                 }
             }
             if(!myset.isRim) break;
