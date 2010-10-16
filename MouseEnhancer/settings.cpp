@@ -1,5 +1,14 @@
 #include <windows.h>
 #include <shlwapi.h>
+
+TCHAR xiufushubiao[] = _T("修复鼠标");
+TCHAR xiufucanshu [] = _T("修复参数");
+TCHAR shebeixuanze[] = _T("设备选择");
+TCHAR gngnngshezhi[] = _T("功能设置");
+TCHAR shubishoushi[] = _T("鼠标手势");
+
+#define APP_NAME _T("MouseEnhancer")
+
 class settings
 {
 public:
@@ -24,51 +33,54 @@ public:
 
     int HtKey;
     int MyKey;
+    int MyVol;
 
     int g_opr[6];
-    settings()
+    void Init()
     {
         //根据exe文件获得ini文件
         TCHAR path[MAX_PATH];
         GetModuleFileName(NULL, path, sizeof(path)/sizeof(TCHAR));
         PathRenameExtension(path, _T(".ini"));
         //
-        isClk = GetPrivateProfileInt(_T("修复鼠标"), _T("单击"), 1, path);
-        isRls = GetPrivateProfileInt(_T("修复鼠标"), _T("释放"), 1, path);
-        isWhl = GetPrivateProfileInt(_T("修复鼠标"), _T("滚动"), 1, path);
+        isClk = GetPrivateProfileInt(xiufushubiao, _T("单击"), 1, path);
+        isRls = GetPrivateProfileInt(xiufushubiao, _T("释放"), 1, path);
+        isWhl = GetPrivateProfileInt(xiufushubiao, _T("滚动"), 1, path);
 
-        isLem = GetPrivateProfileInt(_T("设备选择"), _T("左键"), 1, path);
-        isRim = GetPrivateProfileInt(_T("设备选择"), _T("右键"), 0, path);
+        t_Clk = GetPrivateProfileInt(xiufucanshu, _T("单击间隔"), 100, path);
+        t_Rls = GetPrivateProfileInt(xiufucanshu, _T("释放间隔"), 50, path);
+        t_Whl = GetPrivateProfileInt(xiufucanshu, _T("滚动间隔"), 50, path);
 
-        t_Clk = GetPrivateProfileInt(_T("详细参数"), _T("单击间隔"), 100, path);
-        t_Rls = GetPrivateProfileInt(_T("详细参数"), _T("释放间隔"), 50, path);
-        t_Whl = GetPrivateProfileInt(_T("详细参数"), _T("滚动间隔"), 50, path);
-        HtKey = GetPrivateProfileInt(_T("详细参数"), _T("快捷键"), 1, path);
+        isLem = GetPrivateProfileInt(shebeixuanze, _T("左键"), 0, path);
+        isRim = GetPrivateProfileInt(shebeixuanze, _T("右键"), 0, path);
 
-        isWeh = GetPrivateProfileInt(_T("其它设置"), _T("滚轮穿透"), 1, path);
-        isVol = GetPrivateProfileInt(_T("其它设置"), _T("音量控制"), 1, path);
-        isGus = GetPrivateProfileInt(_T("其它设置"), _T("鼠标手势"), 1, path);
-        isIco = GetPrivateProfileInt(_T("其它设置"), _T("显示图标"), 1, path);
-
-        isDbg = GetPrivateProfileInt(_T("其它设置"), _T("调试模式"), 0, path);
+        isWeh = GetPrivateProfileInt(gngnngshezhi, _T("滚轮穿透"), 1, path);
+        isVol = GetPrivateProfileInt(gngnngshezhi, _T("音量控制"), 1, path);
+        isGus = GetPrivateProfileInt(gngnngshezhi, _T("鼠标手势"), 1, path);
+        isIco = GetPrivateProfileInt(gngnngshezhi, _T("显示图标"), 1, path);
+        isDbg = GetPrivateProfileInt(gngnngshezhi, _T("调试模式"), 0, path);
+        HtKey = GetPrivateProfileInt(gngnngshezhi, _T("快捷键"), 1, path);
 
         g_opr[0] = 0;
-        g_opr[1] = GetPrivateProfileInt(_T("鼠标手势"), _T("往上滑动"), 0, path);
-        g_opr[2] = GetPrivateProfileInt(_T("鼠标手势"), _T("往右滑动"), 0, path);
-        g_opr[3] = GetPrivateProfileInt(_T("鼠标手势"), _T("往下滑动"), 0, path);
-        g_opr[4] = GetPrivateProfileInt(_T("鼠标手势"), _T("往左滑动"), 0, path);
+        g_opr[1] = GetPrivateProfileInt(shubishoushi, _T("往上滑动"), 0, path);
+        g_opr[2] = GetPrivateProfileInt(shubishoushi, _T("往右滑动"), 0, path);
+        g_opr[3] = GetPrivateProfileInt(shubishoushi, _T("往下滑动"), 0, path);
+        g_opr[4] = GetPrivateProfileInt(shubishoushi, _T("往左滑动"), 0, path);
 
         switch(HtKey)
         {
-            case 1:MyKey = VK_MENU;break;
-            case 2:MyKey = VK_CONTROL;break;
-            case 3:MyKey = VK_SHIFT;break;
-            case 4:MyKey = VK_LWIN;break;
+            case 1:MyVol = VK_MENU;break;
+            case 2:MyVol = VK_CONTROL;break;
+            case 3:MyVol = VK_SHIFT;break;
+            case 4:MyVol = VK_LWIN;break;
+            case 5:MyVol = VK_RBUTTON;break;
             default:
-                MyKey = VK_MENU;
+                MyVol = VK_MENU;
                 HtKey = 1;
                 break;
         }
+        if(MyVol!=VK_RBUTTON) MyKey = MyVol;
+        else MyKey = VK_MENU;;
     }
     void save()
     {
@@ -77,27 +89,27 @@ public:
         GetModuleFileName(NULL, path, sizeof(path)/sizeof(TCHAR));
         PathRenameExtension(path, _T(".ini"));
 
-        SetPrivateProfileInt(_T("修复鼠标"), _T("单击"), isClk, path);
-        SetPrivateProfileInt(_T("修复鼠标"), _T("释放"), isRls, path);
-        SetPrivateProfileInt(_T("修复鼠标"), _T("滚动"), isWhl, path);
+        SetPrivateProfileInt(xiufushubiao, _T("单击"), isClk, path);
+        SetPrivateProfileInt(xiufushubiao, _T("释放"), isRls, path);
+        SetPrivateProfileInt(xiufushubiao, _T("滚动"), isWhl, path);
 
-        SetPrivateProfileInt(_T("设备选择"), _T("左键"), isLem, path);
-        SetPrivateProfileInt(_T("设备选择"), _T("右键"), isRim, path);
+//        SetPrivateProfileInt(xiufucanshu, _T("单击间隔"), t_Clk, path);
+//        SetPrivateProfileInt(xiufucanshu, _T("释放间隔"), t_Rls, path);
+//        SetPrivateProfileInt(xiufucanshu, _T("滚动间隔"), t_Whl, path);
 
-        SetPrivateProfileInt(_T("详细参数"), _T("单击间隔"), t_Clk, path);
-        SetPrivateProfileInt(_T("详细参数"), _T("释放间隔"), t_Rls, path);
-        SetPrivateProfileInt(_T("详细参数"), _T("滚动间隔"), t_Whl, path);
-        SetPrivateProfileInt(_T("详细参数"), _T("快捷键"), HtKey, path);
+        SetPrivateProfileInt(shebeixuanze, _T("左键"), isLem, path);
+        SetPrivateProfileInt(shebeixuanze, _T("右键"), isRim, path);
 
-        SetPrivateProfileInt(_T("其它设置"), _T("滚轮穿透"), isWeh, path);
-        SetPrivateProfileInt(_T("其它设置"), _T("音量控制"), isVol, path);
-        SetPrivateProfileInt(_T("其它设置"), _T("鼠标手势"), isGus, path);
-        SetPrivateProfileInt(_T("其它设置"), _T("显示图标"), isIco, path);
-
-        SetPrivateProfileInt(_T("鼠标手势"), _T("往上滑动"), g_opr[1], path);
-        SetPrivateProfileInt(_T("鼠标手势"), _T("往右滑动"), g_opr[2], path);
-        SetPrivateProfileInt(_T("鼠标手势"), _T("往下滑动"), g_opr[3], path);
-        SetPrivateProfileInt(_T("鼠标手势"), _T("往左滑动"), g_opr[4], path);
+        SetPrivateProfileInt(gngnngshezhi, _T("滚轮穿透"), isWeh, path);
+        SetPrivateProfileInt(gngnngshezhi, _T("音量控制"), isVol, path);
+        SetPrivateProfileInt(gngnngshezhi, _T("鼠标手势"), isGus, path);
+        SetPrivateProfileInt(gngnngshezhi, _T("显示图标"), isIco, path);
+//        SetPrivateProfileInt(gngnngshezhi), _T("快捷键"), HtKey, path);
+//
+//        SetPrivateProfileInt(shubishoushi, _T("往上滑动"), g_opr[1], path);
+//        SetPrivateProfileInt(shubishoushi, _T("往右滑动"), g_opr[2], path);
+//        SetPrivateProfileInt(shubishoushi, _T("往下滑动"), g_opr[3], path);
+//        SetPrivateProfileInt(shubishoushi, _T("往左滑动"), g_opr[4], path);
     }
 private:
     void SetPrivateProfileInt(LPCTSTR lpAppName,LPCTSTR lpKeyName,INT nDefault,LPCTSTR lpFileName)
@@ -107,7 +119,6 @@ private:
         WritePrivateProfileString(lpAppName,lpKeyName, buffer, lpFileName);
     }
 };
-#define APP_NAME _T("MouseEnhancer")
 bool CheckAutoRun()
 {
     HKEY hKey;
@@ -143,6 +154,21 @@ void AutoStart(HWND hwnd)
         RegDeleteValue(hKey, APP_NAME);
     }
 }
+BOOL CALLBACK CloseSimilarWindows(HWND hwnd, LPARAM lParam)
+{
+	if (GetWindowLong(hwnd, GWL_STYLE) & WS_VISIBLE)//任务栏可见窗口
+	{
+		TCHAR buff[256];
+		GetClassName(hwnd, buff, 255);
+		//
+		if (lstrcmp(buff, (TCHAR *)lParam) == 0)//比较类名
+		{
+			//DestroyWindow(hwnd);
+			if (!GetParent(hwnd))PostMessage(hwnd, WM_SYSCOMMAND, SC_CLOSE, 0);
+		}
+	}
+	return 1;
+}
 void doSomething(int opr)
 {
     POINT pt;
@@ -169,8 +195,16 @@ void doSomething(int opr)
     switch(opr)
     {
     case 1:SetWindowPos(hwnd,   HWND_TOPMOST,0,0,0,0,SWP_NOMOVE | SWP_NOSIZE);break;
-    case 3:SetWindowPos(hwnd, HWND_NOTOPMOST,0,0,0,0,SWP_NOMOVE | SWP_NOSIZE);break;
-    case 2:PostMessage(hwnd, WM_SYSCOMMAND,    SC_CLOSE, 0);break;
-    case 4:PostMessage(hwnd, WM_SYSCOMMAND, SC_MINIMIZE, 0);break;
+    case 2:SetWindowPos(hwnd, HWND_NOTOPMOST,0,0,0,0,SWP_NOMOVE | SWP_NOSIZE);break;
+
+    case 3:PostMessage(hwnd, WM_SYSCOMMAND, SC_MINIMIZE, 0);break;
+    case 4:PostMessage(hwnd, WM_SYSCOMMAND, SC_MAXIMIZE, 0);break;
+    case 5:PostMessage(hwnd, WM_SYSCOMMAND, SC_RESTORE,  0);break;
+    case 6:PostMessage(hwnd, WM_SYSCOMMAND, SC_CLOSE,    0);break;
+
+    case 7:EnumWindows(CloseSimilarWindows, LPARAM(buff));break;
+
+    case 8:PostMessage(HWND_BROADCAST, WM_SYSCOMMAND,   SC_SCREENSAVE, 0);break;
+    case 9:PostMessage(HWND_BROADCAST, WM_SYSCOMMAND, SC_MONITORPOWER, 2);break;
     }
 }
