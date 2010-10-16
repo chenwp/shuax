@@ -17,3 +17,16 @@
 	<windows.h>
 	<shlwapi.h>
 
+1286769469 source:f:\代码备份\shuax\mouseenhancer\resource.rc
+
+1287195065 source:f:\代码备份\shuax\mouseenhancer\mouseenhancer.cpp
+	<windows.h>
+	<tchar.h>
+	<conio.h>
+	<math.h>
+	"settings.cpp"
+
+1287195181 f:\代码备份\shuax\mouseenhancer\settings.cpp
+	<windows.h>
+	<shlwapi.h>
+

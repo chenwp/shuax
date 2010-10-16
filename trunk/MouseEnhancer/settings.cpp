@@ -12,6 +12,7 @@ public:
 
     bool isWeh;
     bool isVol;
+    bool isGus;
     bool isIco;
 
 
@@ -20,6 +21,8 @@ public:
     int t_Clk;
     int t_Rls;
     int t_Whl;
+
+    int g_opr[6];
     settings()
     {
         //根据exe文件获得ini文件
@@ -40,10 +43,16 @@ public:
 
         isWeh = GetPrivateProfileInt(_T("其它设置"), _T("滚轮穿透"), 1, path);
         isVol = GetPrivateProfileInt(_T("其它设置"), _T("音量控制"), 1, path);
+        isGus = GetPrivateProfileInt(_T("其它设置"), _T("鼠标手势"), 1, path);
         isIco = GetPrivateProfileInt(_T("其它设置"), _T("显示图标"), 1, path);
 
         isDbg = GetPrivateProfileInt(_T("其它设置"), _T("调试模式"), 0, path);
-        //读取注册表
+
+        g_opr[0] = 0;
+        g_opr[1] = GetPrivateProfileInt(_T("鼠标手势"), _T("往上滑动"), 0, path);
+        g_opr[2] = GetPrivateProfileInt(_T("鼠标手势"), _T("往右滑动"), 0, path);
+        g_opr[3] = GetPrivateProfileInt(_T("鼠标手势"), _T("往下滑动"), 0, path);
+        g_opr[4] = GetPrivateProfileInt(_T("鼠标手势"), _T("往左滑动"), 0, path);
     }
     void save()
     {
@@ -65,7 +74,13 @@ public:
 
         SetPrivateProfileInt(_T("其它设置"), _T("滚轮穿透"), isWeh, path);
         SetPrivateProfileInt(_T("其它设置"), _T("音量控制"), isVol, path);
+        SetPrivateProfileInt(_T("其它设置"), _T("鼠标手势"), isGus, path);
         SetPrivateProfileInt(_T("其它设置"), _T("显示图标"), isIco, path);
+
+        SetPrivateProfileInt(_T("鼠标手势"), _T("往上滑动"), g_opr[1], path);
+        SetPrivateProfileInt(_T("鼠标手势"), _T("往右滑动"), g_opr[2], path);
+        SetPrivateProfileInt(_T("鼠标手势"), _T("往下滑动"), g_opr[3], path);
+        SetPrivateProfileInt(_T("鼠标手势"), _T("往左滑动"), g_opr[4], path);
     }
 private:
     void SetPrivateProfileInt(LPCTSTR lpAppName,LPCTSTR lpKeyName,INT nDefault,LPCTSTR lpFileName)
@@ -110,4 +125,15 @@ void AutoStart(HWND hwnd)
 	{
 		RegDeleteValue(hKey, APP_NAME);
 	}
+}
+void doSomething(int opr)
+{
+    HWND hwnd = GetForegroundWindow();
+    switch(opr)
+    {
+        case 1:SetWindowPos(hwnd, HWND_TOPMOST,0,0,0,0,SWP_NOMOVE | SWP_NOSIZE);break;
+        case 2:PostMessage(hwnd, WM_CLOSE, 0, 0);break;
+        case 3:SetWindowPos(hwnd, HWND_NOTOPMOST,0,0,0,0,SWP_NOMOVE | SWP_NOSIZE);break;
+        case 4:ShowWindow(hwnd, SW_MINIMIZE);break;
+    }
 }

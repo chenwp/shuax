@@ -6,7 +6,7 @@
 #include <windows.h>
 #include <tchar.h>
 #include <conio.h>
-
+#include <math.h>
 TCHAR szClass[] = _T("鼠标增强器 - MouseEnhancer");
 
 #include "settings.cpp"
@@ -34,6 +34,12 @@ LRESULT CALLBACK LowLevelMouseProc(int nCode, WPARAM wParam, LPARAM lParam)
     static short nowDest;
     static short oldDest = 0;
 
+    //鼠标手势
+    static POINT startPoint;
+    static POINT endPoint;
+    static double Distance;
+    static int orientation;
+
     MSLLHOOKSTRUCT *pmouse = (MSLLHOOKSTRUCT *)lParam;
     if (nCode == HC_ACTION)
     {
@@ -48,7 +54,7 @@ LRESULT CALLBACK LowLevelMouseProc(int nCode, WPARAM wParam, LPARAM lParam)
             if(nowDest!=oldDest && nowTime<myset.t_Whl) return 1;
             oldDest = nowDest;
 
-            if((GetKeyState(VK_CONTROL)& 0x8000)!=0 && myset.isVol)
+            if((GetKeyState(VK_MENU)& 0x8000)!=0 && myset.isVol)
             {
                 //ctrl down
                 short zDelta = (short)HIWORD(pmouse->mouseData);
@@ -73,6 +79,8 @@ LRESULT CALLBACK LowLevelMouseProc(int nCode, WPARAM wParam, LPARAM lParam)
             }
             break;
         case WM_RBUTTONDOWN:
+            //
+            if((GetKeyState(VK_MENU)& 0x8000)!=0 && myset.isGus) startPoint = pmouse->pt;
             if(!myset.isRim) break;
         case WM_LBUTTONDOWN:
             if(!myset.isLem) break;
@@ -87,6 +95,52 @@ LRESULT CALLBACK LowLevelMouseProc(int nCode, WPARAM wParam, LPARAM lParam)
             }
             break;
         case WM_RBUTTONUP:
+            if((GetKeyState(VK_MENU)& 0x8000)!=0 && myset.isGus)
+            {
+
+                endPoint = pmouse->pt;
+                int x = endPoint.x-startPoint.x;
+                int y = endPoint.y-startPoint.y;
+                Distance = sqrt((double)(x*x+y*y));
+                if(Distance>30)
+                {
+                    //
+                    orientation = 0;
+                    if(x>0&&y<0)
+                    {
+                        //第一象限
+                        y *= -1;
+                        if (x>y&&sqrt(3.0)*y<x) orientation = 2;
+                        if (x<y&&sqrt(3.0)*x<y) orientation = 1;
+                        y *= -1;
+                    }
+                    else if(x>0&&y>0)
+                    {
+                        //第四象限
+                        if (x>y&&sqrt(3.0)*y<x) orientation = 2;
+                        if (x<y&&sqrt(3.0)*x<y) orientation = 3;
+                    }
+                    else if(x<0&&y>0)
+                    {
+                        //第三象限
+                        x *= -1;
+                        if (x>y&&sqrt(3.0)*y<x) orientation = 4;
+                        if (x<y&&sqrt(3.0)*x<y) orientation = 3;
+                        x *= -1;
+                    }
+                    else  if(x<0&&y<0)
+                    {
+                        //第二象限
+                        x *= -1;
+                        y *= -1;
+                        if (x>y&&sqrt(3.0)*y<x) orientation = 4;
+                        if (x<y&&sqrt(3.0)*x<y) orientation = 1;
+                    }
+                     _cprintf("Distance,orientation:\t%f,%d\n",Distance,orientation);
+                     //
+                     doSomething(myset.g_opr[orientation]);
+                }
+            }
             if(!myset.isRim) break;
         case WM_LBUTTONUP:
             if(!myset.isLem) break;
@@ -123,6 +177,7 @@ void ShowContextMenu(HWND hwnd)
     //
     AppendMenu(hMenu, MF_BYPOSITION | (myset.isWeh?MF_CHECKED:0), message++, _T("滚轮穿透"));
     AppendMenu(hMenu, MF_BYPOSITION | (myset.isVol?MF_CHECKED:0), message++, _T("音量控制"));
+    AppendMenu(hMenu, MF_BYPOSITION | (myset.isGus?MF_CHECKED:0), message++, _T("鼠标手势"));
     AppendMenu(hMenu, MF_SEPARATOR, 0, NULL);
 
     hPopMenu = CreatePopupMenu();
@@ -230,6 +285,9 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
                 myset.isVol = ! myset.isVol;
                 break;
             case WM_APP + 8 :
+                myset.isGus = ! myset.isGus;
+                break;
+            case WM_APP + 9 :
             nid.hWnd = hwnd;
             nid.uID = 101;
             Shell_NotifyIcon(NIM_DELETE, &nid);//删除图标
