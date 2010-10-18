@@ -29,6 +29,7 @@
 			<Add library="shlwapi" />
 			<Add library="ole32" />
 		</Linker>
+		<Unit filename="GestureRecognizer.h" />
 		<Unit filename="MouseEnhancer.cpp" />
 		<Unit filename="resource.rc">
 			<Option compilerVar="WINDRES" />
