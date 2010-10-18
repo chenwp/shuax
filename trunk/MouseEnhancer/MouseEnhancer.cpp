@@ -8,11 +8,14 @@
 #include <conio.h>
 #include <math.h>
 
-TCHAR szClass[] = _T("MouseEnhancer v1.2");
+TCHAR szClass[] = _T("MouseEnhancer v1.3");
 
 #include "settings.cpp"
+#include "GestureRecognizer.h"
 
 settings myset;
+Gesture gr;
+
 //定义钩子
 HWND g_hook;
 
@@ -34,12 +37,6 @@ LRESULT CALLBACK LowLevelMouseProc(int nCode, WPARAM wParam, LPARAM lParam)
     static long oldTime = GetCurrentTime();
     static short nowDest;
     static short oldDest = 0;
-
-    //鼠标手势
-    static POINT startPoint;
-    static POINT endPoint;
-    static double Distance;
-    static int orientation;
 
     MSLLHOOKSTRUCT *pmouse = (MSLLHOOKSTRUCT *)lParam;
     if (nCode == HC_ACTION)
@@ -83,7 +80,7 @@ LRESULT CALLBACK LowLevelMouseProc(int nCode, WPARAM wParam, LPARAM lParam)
             //
             if((GetKeyState(myset.MyKey)& 0x8000)!=0 && myset.isGus)
             {
-                startPoint = pmouse->pt;
+                gr.begin(pmouse->pt);
                 return 1;
             }
             if(!myset.isRim) break;
@@ -99,53 +96,21 @@ LRESULT CALLBACK LowLevelMouseProc(int nCode, WPARAM wParam, LPARAM lParam)
                 return 1;//无效单击
             }
             break;
+        case WM_MOUSEMOVE:
+            if((GetKeyState(myset.MyKey)& 0x8000)!=0 && myset.isGus)
+            {
+                gr.add(pmouse->pt);
+            }
+            break;
         case WM_RBUTTONUP:
             if((GetKeyState(myset.MyKey)& 0x8000)!=0 && myset.isGus)
             {
-                //keybd_event(myset.MyKey,0,KEYEVENTF_KEYUP,0);
-                endPoint = pmouse->pt;
-                int x = endPoint.x-startPoint.x;
-                int y = endPoint.y-startPoint.y;
-                Distance = sqrt((double)(x*x+y*y));
-                if(Distance>30)
+                if(gr.end()[0])
                 {
-                    //
-                    orientation = 0;
-                    if(x>0&&y<0)
-                    {
-                        //第一象限
-                        y *= -1;
-                        if (x>y&&sqrt(3.0)*y<x) orientation = 2;
-                        if (x<y&&sqrt(3.0)*x<y) orientation = 1;
-                        y *= -1;
-                    }
-                    else if(x>0&&y>0)
-                    {
-                        //第四象限
-                        if (x>y&&sqrt(3.0)*y<x) orientation = 2;
-                        if (x<y&&sqrt(3.0)*x<y) orientation = 3;
-                    }
-                    else if(x<0&&y>0)
-                    {
-                        //第三象限
-                        x *= -1;
-                        if (x>y&&sqrt(3.0)*y<x) orientation = 4;
-                        if (x<y&&sqrt(3.0)*x<y) orientation = 3;
-                        x *= -1;
-                    }
-                    else  if(x<0&&y<0)
-                    {
-                        //第二象限
-                        x *= -1;
-                        y *= -1;
-                        if (x>y&&sqrt(3.0)*y<x) orientation = 4;
-                        if (x<y&&sqrt(3.0)*x<y) orientation = 1;
-                    }
-                     _cprintf("Distance,orientation:\t%f,%d\n",Distance,orientation);
-                     //
-                     doSomething(myset.g_opr[orientation]);
-                     return 1;
+                    _cprintf("command:%S\n",gr.end());
+                    doSomething(gr.end());
                 }
+                return 1;
             }
             if(!myset.isRim) break;
         case WM_LBUTTONUP:
@@ -219,19 +184,19 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 }
 void RunAndWait(TCHAR *path)
 {
-	STARTUPINFO StartInfo = {sizeof(StartInfo)};
-	PROCESS_INFORMATION ProcInfo;
-	memset(&ProcInfo, 0, sizeof(ProcInfo));
-	TCHAR temp[MAX_PATH];
-	wsprintf(temp,_T("notepad.exe \"%s\""),path);
-	if (CreateProcess(NULL,temp, NULL, NULL, NULL, NULL, NULL, NULL, &StartInfo, &ProcInfo))
-	{
-		//   等待这个进程结束
-		WaitForSingleObject(ProcInfo.hProcess, INFINITE);
-		CloseHandle(ProcInfo.hThread);
-		CloseHandle(ProcInfo.hProcess);
-	}
-	return ;
+    STARTUPINFO StartInfo = {sizeof(StartInfo)};
+    PROCESS_INFORMATION ProcInfo;
+    memset(&ProcInfo, 0, sizeof(ProcInfo));
+    TCHAR temp[MAX_PATH];
+    wsprintf(temp,_T("notepad.exe \"%s\""),path);
+    if (CreateProcess(NULL,temp, NULL, NULL, NULL, NULL, NULL, NULL, &StartInfo, &ProcInfo))
+    {
+        //   等待这个进程结束
+        WaitForSingleObject(ProcInfo.hProcess, INFINITE);
+        CloseHandle(ProcInfo.hThread);
+        CloseHandle(ProcInfo.hProcess);
+    }
+    return ;
 }
 LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -272,7 +237,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
             DestroyWindow(hwnd);
             break;
         case SWM_HELP:
-            MessageBox(hwnd,_T("MouseEnhancer v1.2\n\n本软件是免费软件！\n更多信息请访问：www.shuax.com"),szClass,MB_OK | MB_ICONINFORMATION);
+            MessageBox(hwnd,_T("MouseEnhancer v1.3\n\n本软件是免费软件！\n更多信息请访问：www.shuax.com"),szClass,MB_OK | MB_ICONINFORMATION);
             InvalidateRect(hwnd, NULL, false);
             break;
         default:
@@ -304,10 +269,10 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
                 myset.isGus = ! myset.isGus;
                 break;
             case WM_APP + 9 :
-            nid.hWnd = hwnd;
-            nid.uID = 101;
-            Shell_NotifyIcon(NIM_DELETE, &nid);//删除图标
-            myset.isIco = ! myset.isIco;
+                nid.hWnd = hwnd;
+                nid.uID = 101;
+                Shell_NotifyIcon(NIM_DELETE, &nid);//删除图标
+                myset.isIco = ! myset.isIco;
                 break;
             }
             myset.save();

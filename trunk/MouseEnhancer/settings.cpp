@@ -1,11 +1,10 @@
 #include <windows.h>
 #include <shlwapi.h>
 
-TCHAR xiufushubiao[] = _T("修复鼠标");
+TCHAR xiufushubiao[] = _T("修复功能");
 TCHAR xiufucanshu [] = _T("修复参数");
 TCHAR shebeixuanze[] = _T("设备选择");
 TCHAR gngnngshezhi[] = _T("功能设置");
-TCHAR shubishoushi[] = _T("鼠标手势");
 
 #define APP_NAME _T("MouseEnhancer")
 
@@ -61,25 +60,32 @@ public:
         isDbg = GetPrivateProfileInt(gngnngshezhi, _T("调试模式"), 0, path);
         HtKey = GetPrivateProfileInt(gngnngshezhi, _T("快捷键"), 1, path);
 
-        g_opr[0] = 0;
-        g_opr[1] = GetPrivateProfileInt(shubishoushi, _T("往上滑动"), 0, path);
-        g_opr[2] = GetPrivateProfileInt(shubishoushi, _T("往右滑动"), 0, path);
-        g_opr[3] = GetPrivateProfileInt(shubishoushi, _T("往下滑动"), 0, path);
-        g_opr[4] = GetPrivateProfileInt(shubishoushi, _T("往左滑动"), 0, path);
-
         switch(HtKey)
         {
-            case 1:MyVol = VK_MENU;break;
-            case 2:MyVol = VK_CONTROL;break;
-            case 3:MyVol = VK_SHIFT;break;
-            case 4:MyVol = VK_LWIN;break;
-            case 5:MyVol = VK_RBUTTON;break;
-            default:
-                MyVol = VK_MENU;
-                HtKey = 1;
-                break;
+        case 1:
+            MyVol = VK_MENU;
+            break;
+        case 2:
+            MyVol = VK_CONTROL;
+            break;
+        case 3:
+            MyVol = VK_SHIFT;
+            break;
+        case 4:
+            MyVol = VK_LWIN;
+            break;
+        case 5:
+            MyVol = VK_RBUTTON;
+            break;
+        case 6:
+            MyVol = VK_LBUTTON;
+            break;
+        default:
+            MyVol = VK_MENU;
+            HtKey = 1;
+            break;
         }
-        if(MyVol!=VK_RBUTTON) MyKey = MyVol;
+        if(MyVol!=VK_RBUTTON&&MyVol!=VK_LBUTTON) MyKey = MyVol;
         else MyKey = VK_MENU;;
     }
     void save()
@@ -93,10 +99,6 @@ public:
         SetPrivateProfileInt(xiufushubiao, _T("释放"), isRls, path);
         SetPrivateProfileInt(xiufushubiao, _T("滚动"), isWhl, path);
 
-//        SetPrivateProfileInt(xiufucanshu, _T("单击间隔"), t_Clk, path);
-//        SetPrivateProfileInt(xiufucanshu, _T("释放间隔"), t_Rls, path);
-//        SetPrivateProfileInt(xiufucanshu, _T("滚动间隔"), t_Whl, path);
-
         SetPrivateProfileInt(shebeixuanze, _T("左键"), isLem, path);
         SetPrivateProfileInt(shebeixuanze, _T("右键"), isRim, path);
 
@@ -104,12 +106,6 @@ public:
         SetPrivateProfileInt(gngnngshezhi, _T("音量控制"), isVol, path);
         SetPrivateProfileInt(gngnngshezhi, _T("鼠标手势"), isGus, path);
         SetPrivateProfileInt(gngnngshezhi, _T("显示图标"), isIco, path);
-//        SetPrivateProfileInt(gngnngshezhi), _T("快捷键"), HtKey, path);
-//
-//        SetPrivateProfileInt(shubishoushi, _T("往上滑动"), g_opr[1], path);
-//        SetPrivateProfileInt(shubishoushi, _T("往右滑动"), g_opr[2], path);
-//        SetPrivateProfileInt(shubishoushi, _T("往下滑动"), g_opr[3], path);
-//        SetPrivateProfileInt(shubishoushi, _T("往左滑动"), g_opr[4], path);
     }
 private:
     void SetPrivateProfileInt(LPCTSTR lpAppName,LPCTSTR lpKeyName,INT nDefault,LPCTSTR lpFileName)
@@ -119,6 +115,7 @@ private:
         WritePrivateProfileString(lpAppName,lpKeyName, buffer, lpFileName);
     }
 };
+
 bool CheckAutoRun()
 {
     HKEY hKey;
@@ -156,20 +153,20 @@ void AutoStart(HWND hwnd)
 }
 BOOL CALLBACK CloseSimilarWindows(HWND hwnd, LPARAM lParam)
 {
-	if (GetWindowLong(hwnd, GWL_STYLE) & WS_VISIBLE)//任务栏可见窗口
-	{
-		TCHAR buff[256];
-		GetClassName(hwnd, buff, 255);
-		//
-		if (lstrcmp(buff, (TCHAR *)lParam) == 0)//比较类名
-		{
-			//DestroyWindow(hwnd);
-			if (!GetParent(hwnd))PostMessage(hwnd, WM_SYSCOMMAND, SC_CLOSE, 0);
-		}
-	}
-	return 1;
+    if (GetWindowLong(hwnd, GWL_STYLE) & WS_VISIBLE)//任务栏可见窗口
+    {
+        TCHAR buff[256];
+        GetClassName(hwnd, buff, 255);
+        //
+        if (lstrcmp(buff, (TCHAR *)lParam) == 0)//比较类名
+        {
+            //DestroyWindow(hwnd);
+            if (!GetParent(hwnd))PostMessage(hwnd, WM_SYSCOMMAND, SC_CLOSE, 0);
+        }
+    }
+    return 1;
 }
-void doSomething(int opr)
+void doSomething(TCHAR *op)
 {
     POINT pt;
     TCHAR buff[256];
@@ -192,19 +189,49 @@ void doSomething(int opr)
     if (!_tcsicmp(buff, _T("WorkerW"))) return;
 
     _cprintf("Class:%S\n",buff);
+
+    //根据exe文件获得ini文件
+    TCHAR path[MAX_PATH];
+    GetModuleFileName(NULL, path, sizeof(path)/sizeof(TCHAR));
+    PathRenameExtension(path, _T(".ini"));
+    //
+    int opr = GetPrivateProfileInt(_T("鼠标手势"), op, 0, path);
     switch(opr)
     {
-    case 1:SetWindowPos(hwnd,   HWND_TOPMOST,0,0,0,0,SWP_NOMOVE | SWP_NOSIZE);break;
-    case 2:SetWindowPos(hwnd, HWND_NOTOPMOST,0,0,0,0,SWP_NOMOVE | SWP_NOSIZE);break;
-
-    case 3:PostMessage(hwnd, WM_SYSCOMMAND, SC_MINIMIZE, 0);break;
-    case 4:PostMessage(hwnd, WM_SYSCOMMAND, SC_MAXIMIZE, 0);break;
-    case 5:PostMessage(hwnd, WM_SYSCOMMAND, SC_RESTORE,  0);break;
-    case 6:PostMessage(hwnd, WM_SYSCOMMAND, SC_CLOSE,    0);break;
-
-    case 7:EnumWindows(CloseSimilarWindows, LPARAM(buff));break;
-
-    case 8:PostMessage(HWND_BROADCAST, WM_SYSCOMMAND,   SC_SCREENSAVE, 0);break;
-    case 9:PostMessage(HWND_BROADCAST, WM_SYSCOMMAND, SC_MONITORPOWER, 2);break;
+    case 1:
+        SetWindowPos(hwnd,   HWND_TOPMOST,0,0,0,0,SWP_NOMOVE | SWP_NOSIZE);
+        break;
+    case 2:
+        SetWindowPos(hwnd, HWND_NOTOPMOST,0,0,0,0,SWP_NOMOVE | SWP_NOSIZE);
+        break;
+    case 3:
+        PostMessage(hwnd, WM_SYSCOMMAND, SC_MINIMIZE, 0);
+        break;
+    case 4:
+        PostMessage(hwnd, WM_SYSCOMMAND, SC_MAXIMIZE, 0);
+        break;
+    case 5:
+        PostMessage(hwnd, WM_SYSCOMMAND, SC_RESTORE,  0);
+        break;
+    case 6:
+        PostMessage(hwnd, WM_SYSCOMMAND, SC_CLOSE,    0);
+        break;
+    case 7:
+        EnumWindows(CloseSimilarWindows, LPARAM(buff));
+        break;
+    case 8:
+        PostMessage(HWND_BROADCAST, WM_SYSCOMMAND,   SC_SCREENSAVE, 0);
+        break;
+    case 9:
+        PostMessage(HWND_BROADCAST, WM_SYSCOMMAND, SC_MONITORPOWER, 2);
+        break;
+    case 10:
+        hwnd = FindWindow(szClass, szClass);
+        PostMessage(hwnd, WM_CLOSE, 0, 0);
+        break;
+    case 0:
+        GetPrivateProfileString(_T("鼠标手势"), op, _T(""),buff,255, path);
+        keybd_event(myset.MyKey,0,KEYEVENTF_KEYUP,0);
+        ShellExecute(0, NULL, buff, NULL, NULL, SW_SHOWNORMAL);
     }
 }
