@@ -6,16 +6,29 @@
 --------------------Configuration: Picasa3 - Win32 Release--------------------
 </h3>
 <h3>Command Lines</h3>
-Creating temporary file "C:\Users\shuax\AppData\Local\Temp\RSPE74D.tmp" with contents
+Creating command line "rc.exe /l 0x804 /fo"Release/Picasa3.res" /d "NDEBUG" /d "_AFXDLL" "F:\代码备份\shuax\Picasa3\Picasa3.rc"" 
+Creating temporary file "C:\Users\shuax\AppData\Local\Temp\RSP74C3.tmp" with contents
 [
 /nologo /MD /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /Fp"Release/Picasa3.pch" /Yu"stdafx.h" /Fo"Release/" /Fd"Release/" /FD /c 
+"F:\代码备份\shuax\Picasa3\Picasa3.cpp"
 "F:\代码备份\shuax\Picasa3\Picasa3Dlg.cpp"
 ]
-Creating command line "cl.exe @C:\Users\shuax\AppData\Local\Temp\RSPE74D.tmp" 
+Creating command line "cl.exe @C:\Users\shuax\AppData\Local\Temp\RSP74C3.tmp" 
+Creating temporary file "C:\Users\shuax\AppData\Local\Temp\RSP74C4.tmp" with contents
+[
+/nologo /MD /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /Fp"Release/Picasa3.pch" /Yc"stdafx.h" /Fo"Release/" /Fd"Release/" /FD /c 
+"F:\代码备份\shuax\Picasa3\StdAfx.cpp"
+]
+Creating command line "cl.exe @C:\Users\shuax\AppData\Local\Temp\RSP74C4.tmp" 
 Creating command line "link.exe /nologo /subsystem:windows /incremental:no /pdb:"Release/Picasa3.pdb" /machine:I386 /out:"Release/Picasa3.exe"  ".\Release\Picasa3.obj" ".\Release\Picasa3Dlg.obj" ".\Release\StdAfx.obj" ".\Release\Picasa3.res" "
 <h3>Output Window</h3>
+Compiling resources...
 Compiling...
+StdAfx.cpp
+Compiling...
+Picasa3.cpp
 Picasa3Dlg.cpp
+Generating Code...
 Linking...
 
 
