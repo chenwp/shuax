@@ -19,18 +19,23 @@
 
 1286769469 source:f:\代码备份\shuax\mouseenhancer\resource.rc
 
-1287399765 source:f:\代码备份\shuax\mouseenhancer\mouseenhancer.cpp
+1287796206 source:f:\代码备份\shuax\mouseenhancer\mouseenhancer.cpp
 	<windows.h>
 	<tchar.h>
 	<conio.h>
 	<math.h>
-	"settings.cpp"
+	"settings.h"
 	"GestureRecognizer.h"
 
 1287400122 f:\代码备份\shuax\mouseenhancer\settings.cpp
 	<windows.h>
 	<shlwapi.h>
 
-1287398440 f:\代码备份\shuax\mouseenhancer\gesturerecognizer.h
+1287400404 f:\代码备份\shuax\mouseenhancer\gesturerecognizer.h
 	<math.h>
+
+1287795784 f:\代码备份\shuax\mouseenhancer\settings.h
+	<windows.h>
+	<shlwapi.h>
+	<PROCESS.H>
 

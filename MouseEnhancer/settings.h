@@ -1,5 +1,10 @@
+#ifndef _SETTINGS_H_
+#define _SETTINGS_H_
+
 #include <windows.h>
 #include <shlwapi.h>
+
+#include <PROCESS.H>
 
 TCHAR xiufushubiao[] = _T("修复功能");
 TCHAR xiufucanshu [] = _T("修复参数");
@@ -105,6 +110,7 @@ public:
         SetPrivateProfileInt(gngnngshezhi, _T("滚轮穿透"), isWeh, path);
         SetPrivateProfileInt(gngnngshezhi, _T("音量控制"), isVol, path);
         SetPrivateProfileInt(gngnngshezhi, _T("鼠标手势"), isGus, path);
+        //
         SetPrivateProfileInt(gngnngshezhi, _T("显示图标"), isIco, path);
     }
 private:
@@ -153,18 +159,42 @@ void AutoStart(HWND hwnd)
 }
 BOOL CALLBACK CloseSimilarWindows(HWND hwnd, LPARAM lParam)
 {
-    if (GetWindowLong(hwnd, GWL_STYLE) & WS_VISIBLE)//任务栏可见窗口
+    if (GetParent(hwnd)==NULL  &&  IsWindowVisible(hwnd)) //可见顶层窗口
     {
         TCHAR buff[256];
         GetClassName(hwnd, buff, 255);
-        //
-        if (lstrcmp(buff, (TCHAR *)lParam) == 0)//比较类名
+        if (lstrcmp(buff, (TCHAR *)lParam) == 0) PostMessage(hwnd, WM_SYSCOMMAND, SC_CLOSE, 0);
+    }
+    return 1;
+}
+
+
+int found;
+
+BOOL CALLBACK MySetForegroundWindow(HWND hwnd, LPARAM lParam)
+{
+    if (GetParent(hwnd)==NULL  &&  IsWindowVisible(hwnd)) //可见顶层窗口
+    {
+        DWORD   ProcID   =   0;
+        GetWindowThreadProcessId(hwnd,&ProcID);
+        if (ProcID==(DWORD)lParam)
         {
-            //DestroyWindow(hwnd);
-            if (!GetParent(hwnd))PostMessage(hwnd, WM_SYSCOMMAND, SC_CLOSE, 0);
+            SetWindowPos(hwnd,   HWND_TOPMOST,0,0,0,0,SWP_NOMOVE | SWP_NOSIZE);
+            found = true;
         }
     }
     return 1;
+}
+
+void KeepTop(PVOID pvoid)
+{
+    LPARAM lParam = (LPARAM)pvoid;
+    found = false;
+    while(!found)
+    {
+        Sleep(50);
+        EnumWindows(MySetForegroundWindow, lParam);
+    }
 }
 void doSomething(TCHAR *op)
 {
@@ -178,15 +208,18 @@ void doSomething(TCHAR *op)
         hwnd=GetParent(hwnd);
     }
 
-    if (!(GetWindowLong(hwnd, GWL_STYLE) & WS_VISIBLE)) return;
+
+    bool isDesktop = false;
+    if (!(GetWindowLong(hwnd, GWL_STYLE) & WS_VISIBLE)) isDesktop = true;
 
     GetWindowText(hwnd, buff, 255);
-    if (!_tcsicmp(buff, _T("Program Manager"))) return;
+    if (!_tcsicmp(buff, _T("Program Manager"))) isDesktop = true;
 
     GetClassName(hwnd, buff, 255);
-    if (!_tcsicmp(buff, _T("tooltips_class32"))) return;
-    if (!_tcsicmp(buff, _T("Shell_TrayWnd"))) return;
-    if (!_tcsicmp(buff, _T("WorkerW"))) return;
+    if (!_tcsicmp(buff, _T("tooltips_class32"))) isDesktop = true;
+    if (!_tcsicmp(buff, _T("Shell_TrayWnd"))) isDesktop = true;
+    if (!_tcsicmp(buff, _T("WorkerW"))) isDesktop = true;
+
 
     _cprintf("Class:%S\n",buff);
 
@@ -199,25 +232,25 @@ void doSomething(TCHAR *op)
     switch(opr)
     {
     case 1:
-        SetWindowPos(hwnd,   HWND_TOPMOST,0,0,0,0,SWP_NOMOVE | SWP_NOSIZE);
+        if(!isDesktop)SetWindowPos(hwnd,   HWND_TOPMOST,0,0,0,0,SWP_NOMOVE | SWP_NOSIZE);
         break;
     case 2:
-        SetWindowPos(hwnd, HWND_NOTOPMOST,0,0,0,0,SWP_NOMOVE | SWP_NOSIZE);
+        if(!isDesktop)SetWindowPos(hwnd, HWND_NOTOPMOST,0,0,0,0,SWP_NOMOVE | SWP_NOSIZE);
         break;
     case 3:
-        PostMessage(hwnd, WM_SYSCOMMAND, SC_MINIMIZE, 0);
+        if(!isDesktop)PostMessage(hwnd, WM_SYSCOMMAND, SC_MINIMIZE, 0);
         break;
     case 4:
-        PostMessage(hwnd, WM_SYSCOMMAND, SC_MAXIMIZE, 0);
+        if(!isDesktop)PostMessage(hwnd, WM_SYSCOMMAND, SC_MAXIMIZE, 0);
         break;
     case 5:
-        PostMessage(hwnd, WM_SYSCOMMAND, SC_RESTORE,  0);
+        if(!isDesktop)PostMessage(hwnd, WM_SYSCOMMAND, SC_RESTORE,  0);
         break;
     case 6:
-        PostMessage(hwnd, WM_SYSCOMMAND, SC_CLOSE,    0);
+        if(!isDesktop)PostMessage(hwnd, WM_SYSCOMMAND, SC_CLOSE,    0);
         break;
     case 7:
-        EnumWindows(CloseSimilarWindows, LPARAM(buff));
+        if(!isDesktop)EnumWindows(CloseSimilarWindows, LPARAM(buff));
         break;
     case 8:
         PostMessage(HWND_BROADCAST, WM_SYSCOMMAND,   SC_SCREENSAVE, 0);
@@ -231,7 +264,14 @@ void doSomething(TCHAR *op)
         break;
     case 0:
         GetPrivateProfileString(_T("鼠标手势"), op, _T(""),buff,255, path);
-        keybd_event(myset.MyKey,0,KEYEVENTF_KEYUP,0);
-        ShellExecute(0, NULL, buff, NULL, NULL, SW_SHOWNORMAL);
+        STARTUPINFO StartInfo = {sizeof(StartInfo)};
+        PROCESS_INFORMATION ProcInfo;
+        memset(&ProcInfo, 0, sizeof(ProcInfo));
+        if(CreateProcess(NULL, buff, NULL, NULL, FALSE, NULL, NULL, NULL, &StartInfo, &ProcInfo)!=0)
+        {
+            _cprintf("start:%d %S\n\n",ProcInfo.dwProcessId,buff);
+            _beginthread(KeepTop,0,(void*)ProcInfo.dwProcessId);
+        }
     }
 }
+#endif /* _SETTINGS_H_ */

@@ -8,9 +8,9 @@
 #include <conio.h>
 #include <math.h>
 
-TCHAR szClass[] = _T("MouseEnhancer v1.3");
+TCHAR szClass[] = _T("MouseEnhancer v1.4");
 
-#include "settings.cpp"
+#include "settings.h"
 #include "GestureRecognizer.h"
 
 settings myset;
@@ -25,7 +25,7 @@ NOTIFYICONDATA nid;
 #define SWM_HELP (WM_APP+101)
 #define SWM_AUTO (WM_APP+102)
 #define SWM_SETT (WM_APP+103)
-#define SWM_REFR (WM_APP+104)
+//#define SWM_REFR (WM_APP+104)
 //鼠标钩子函数
 LRESULT CALLBACK LowLevelMouseProc(int nCode, WPARAM wParam, LPARAM lParam)
 {
@@ -133,7 +133,7 @@ void ShowContextMenu(HWND hwnd)
     POINT pt;
     GetCursorPos(&pt);
     HMENU hMenu = CreatePopupMenu();
-    HMENU hPopMenu,hPopMenu2;
+    HMENU hPopMenu;
     int message = WM_APP + 1;
     bool isAutoRun = CheckAutoRun();
     //
@@ -152,10 +152,8 @@ void ShowContextMenu(HWND hwnd)
     AppendMenu(hMenu, MF_SEPARATOR, 0, NULL);
 
     hPopMenu = CreatePopupMenu();
-    hPopMenu2 = CreatePopupMenu();
-    AppendMenu(hPopMenu2, MF_BYPOSITION, SWM_SETT, L"手动编辑");
-    AppendMenu(hPopMenu2, MF_BYPOSITION, SWM_REFR, L"刷新设置");
-    AppendMenu(hPopMenu, MF_POPUP | MF_BYPOSITION, (UINT)hPopMenu2, _T("配置文件"));
+
+    AppendMenu(hPopMenu, MF_BYPOSITION, SWM_SETT, L"编辑配置文件");
     AppendMenu(hPopMenu, MF_SEPARATOR, 0, NULL);
     AppendMenu(hPopMenu, MF_BYPOSITION | (myset.isIco?0:MF_CHECKED), message++, L"隐藏图标");
     AppendMenu(hPopMenu, MF_BYPOSITION | (isAutoRun?MF_CHECKED:0), SWM_AUTO, L"开机启动");
@@ -198,46 +196,58 @@ void RunAndWait(TCHAR *path)
     }
     return ;
 }
+
+
+void create(HWND hwnd)
+{
+    myset.Init();
+    myset.save();
+
+    if(myset.isDbg) AllocConsole();
+    else FreeConsole();
+
+    if(!myset.isIco) return;
+
+    nid.cbSize = sizeof(NOTIFYICONDATA);
+    nid.hWnd = hwnd;
+    nid.uID = 101;
+    nid.uFlags = NIF_ICON | NIF_MESSAGE | NIF_TIP;
+    nid.uCallbackMessage = WM_USER;
+    nid.hIcon = LoadIcon(GetModuleHandle(NULL), _T("B"));
+    _tcscpy(nid.szTip, szClass);
+    Shell_NotifyIcon(NIM_ADD, &nid);
+     return;
+}
+void ManSet(PVOID pvoid)
+{
+    TCHAR path[MAX_PATH];
+    GetModuleFileName(NULL, path, sizeof(path)/sizeof(TCHAR));
+    PathRenameExtension(path, _T(".ini"));
+    RunAndWait(path);
+    create((HWND)pvoid);
+}
 LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     switch (message)
     {
     case WM_CREATE:
-
-        if(myset.isDbg) AllocConsole();
-
-        if(!myset.isIco) break;
-
-        nid.cbSize = sizeof(NOTIFYICONDATA);
-        nid.hWnd = hwnd;
-        nid.uID = 101;
-        nid.uFlags = NIF_ICON | NIF_MESSAGE | NIF_TIP;
-        nid.uCallbackMessage = WM_USER;
-        nid.hIcon = LoadIcon(GetModuleHandle(NULL), _T("B"));
-        _tcscpy(nid.szTip, szClass);
-        Shell_NotifyIcon(NIM_ADD, &nid);
+        create(hwnd);
         break;
     case WM_COMMAND:
         switch (wParam)
         {
-        case SWM_REFR:
-            myset.Init();
-            myset.save();
-            break;
         case SWM_AUTO:
             AutoStart(hwnd);
             break;
         case SWM_SETT:
-            TCHAR path[MAX_PATH];
-            GetModuleFileName(NULL, path, sizeof(path)/sizeof(TCHAR));
-            PathRenameExtension(path, _T(".ini"));
-            ShellExecute(0, NULL, path, NULL, NULL, SW_SHOWNORMAL);
+            _cprintf("%d\n",hwnd);
+            _beginthread(ManSet,0,hwnd);
             break;
         case SWM_EXIT:
             DestroyWindow(hwnd);
             break;
         case SWM_HELP:
-            MessageBox(hwnd,_T("MouseEnhancer v1.3\n\n本软件是免费软件！\n更多信息请访问：www.shuax.com"),szClass,MB_OK | MB_ICONINFORMATION);
+            MessageBox(hwnd,_T("MouseEnhancer v1.4\n\n本软件是免费软件，欢迎你的使用！\n更多信息请访问：www.shuax.com"),szClass,MB_OK | MB_ICONINFORMATION);
             InvalidateRect(hwnd, NULL, false);
             break;
         default:
@@ -281,8 +291,8 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
     case WM_USER:
         switch (lParam)
         {
-        case WM_LBUTTONDOWN:
-        case WM_RBUTTONDOWN:
+        case WM_LBUTTONUP:
+        case WM_RBUTTONUP:
             ShowContextMenu(hwnd);
             break;
         case WM_LBUTTONDBLCLK:
