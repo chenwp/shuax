@@ -17,25 +17,33 @@
 	<windows.h>
 	<shlwapi.h>
 
-1286769469 source:f:\代码备份\shuax\mouseenhancer\resource.rc
+1288531562 source:f:\代码备份\shuax\mouseenhancer\resource.rc
 
-1287796206 source:f:\代码备份\shuax\mouseenhancer\mouseenhancer.cpp
+1288616492 source:f:\代码备份\shuax\mouseenhancer\mouseenhancer.cpp
 	<windows.h>
+	<mmsystem.h>
 	<tchar.h>
 	<conio.h>
 	<math.h>
+	<GdiPlus.h>
 	"settings.h"
 	"GestureRecognizer.h"
+	"showvol.h"
 
 1287400122 f:\代码备份\shuax\mouseenhancer\settings.cpp
 	<windows.h>
 	<shlwapi.h>
 
-1287400404 f:\代码备份\shuax\mouseenhancer\gesturerecognizer.h
+1288528730 f:\代码备份\shuax\mouseenhancer\gesturerecognizer.h
 	<math.h>
 
-1287795784 f:\代码备份\shuax\mouseenhancer\settings.h
+1288524333 f:\代码备份\shuax\mouseenhancer\settings.h
 	<windows.h>
 	<shlwapi.h>
 	<PROCESS.H>
+
+1288616644 f:\代码备份\shuax\mouseenhancer\showvol.h
+
+1288590854 f:\代码备份\shuax\mouseenhancer\rscwaveout.h
+	<Mmsystem.h>
 

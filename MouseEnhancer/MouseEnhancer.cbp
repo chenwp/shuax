@@ -12,7 +12,9 @@
 				<Option type="0" />
 				<Option compiler="gcc" />
 				<Compiler>
-					<Add option="-O2" />
+					<Add option="-fexpensive-optimizations" />
+					<Add option="-Os" />
+					<Add option="-O3" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
@@ -28,6 +30,8 @@
 			<Add library="kernel32" />
 			<Add library="shlwapi" />
 			<Add library="ole32" />
+			<Add library="gdiplus" />
+			<Add library="winmm" />
 		</Linker>
 		<Unit filename="GestureRecognizer.h" />
 		<Unit filename="MouseEnhancer.cpp" />
@@ -35,6 +39,7 @@
 			<Option compilerVar="WINDRES" />
 		</Unit>
 		<Unit filename="settings.h" />
+		<Unit filename="showvol.h" />
 		<Extensions>
 			<code_completion />
 			<debugger />

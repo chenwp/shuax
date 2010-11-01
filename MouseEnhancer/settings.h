@@ -190,10 +190,12 @@ void KeepTop(PVOID pvoid)
 {
     LPARAM lParam = (LPARAM)pvoid;
     found = false;
+    long StartTime = GetCurrentTime();
     while(!found)
     {
         Sleep(50);
         EnumWindows(MySetForegroundWindow, lParam);
+        if(GetCurrentTime()-StartTime>10000) break;//超时强制退出
     }
 }
 void doSomething(TCHAR *op)
@@ -269,7 +271,7 @@ void doSomething(TCHAR *op)
         memset(&ProcInfo, 0, sizeof(ProcInfo));
         if(CreateProcess(NULL, buff, NULL, NULL, FALSE, NULL, NULL, NULL, &StartInfo, &ProcInfo)!=0)
         {
-            _cprintf("start:%d %S\n\n",ProcInfo.dwProcessId,buff);
+            _cprintf("Start:%X %S\n\n",ProcInfo.dwProcessId,buff);
             _beginthread(KeepTop,0,(void*)ProcInfo.dwProcessId);
         }
     }

@@ -4,11 +4,15 @@
 #define _WIN32_IE 0x0600
 
 #include <windows.h>
+#include <mmsystem.h>
 #include <tchar.h>
 #include <conio.h>
 #include <math.h>
 
-TCHAR szClass[] = _T("MouseEnhancer v1.4");
+#include <GdiPlus.h>
+using namespace Gdiplus;
+
+TCHAR szClass[] = _T("MouseEnhancer v1.5");
 
 #include "settings.h"
 #include "GestureRecognizer.h"
@@ -25,7 +29,12 @@ NOTIFYICONDATA nid;
 #define SWM_HELP (WM_APP+101)
 #define SWM_AUTO (WM_APP+102)
 #define SWM_SETT (WM_APP+103)
-//#define SWM_REFR (WM_APP+104)
+
+POINT size;
+HWND m_hwnd;
+
+#include "showvol.h"
+
 //鼠标钩子函数
 LRESULT CALLBACK LowLevelMouseProc(int nCode, WPARAM wParam, LPARAM lParam)
 {
@@ -61,12 +70,19 @@ LRESULT CALLBACK LowLevelMouseProc(int nCode, WPARAM wParam, LPARAM lParam)
                 {
                     //up
                     SendMessage(WindowFromPoint(pmouse->pt), 793, 197266, 655360);
+                    SendMessage(WindowFromPoint(pmouse->pt), 793, 197266, 655360);
+                    SendMessage(WindowFromPoint(pmouse->pt), 793, 197266, 655360);
                 }
                 else
                 {
                     //down
                     SendMessage(WindowFromPoint(pmouse->pt), 793, 197266, 589824);
+                    SendMessage(WindowFromPoint(pmouse->pt), 793, 197266, 589824);
+                    SendMessage(WindowFromPoint(pmouse->pt), 793, 197266, 589824);
                 }
+                //
+                PlaySound(MAKEINTRESOURCE(130), GetModuleHandle(NULL), SND_RESOURCE | SND_ASYNC | SND_NOWAIT | SND_NODEFAULT);
+                _beginthread(ShowVol,0,(void*)m_hwnd);
                 return 1;
             }
             if(myset.isWeh)
@@ -107,7 +123,7 @@ LRESULT CALLBACK LowLevelMouseProc(int nCode, WPARAM wParam, LPARAM lParam)
             {
                 if(gr.end()[0])
                 {
-                    _cprintf("command:%S\n",gr.end());
+                    _cprintf("Command:%S\n",gr.end());
                     doSomething(gr.end());
                 }
                 return 1;
@@ -170,16 +186,6 @@ void ShowContextMenu(HWND hwnd)
     TrackPopupMenu(hMenu, TPM_BOTTOMALIGN, pt.x, pt.y, 0, hwnd, NULL);
     DestroyMenu(hMenu);
 }
-BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
-{
-    HWND hwnd = CreateWindowEx(WS_EX_TOOLWINDOW, szClass, szClass, WS_POPUPWINDOW,
-                               CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, NULL, NULL, hInstance, NULL);
-    if (!hwnd)
-    {
-        return FALSE;
-    }
-    return TRUE;
-}
 void RunAndWait(TCHAR *path)
 {
     STARTUPINFO StartInfo = {sizeof(StartInfo)};
@@ -196,7 +202,6 @@ void RunAndWait(TCHAR *path)
     }
     return ;
 }
-
 
 void create(HWND hwnd)
 {
@@ -247,7 +252,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
             DestroyWindow(hwnd);
             break;
         case SWM_HELP:
-            MessageBox(hwnd,_T("MouseEnhancer v1.4\n\n本软件是免费软件，欢迎你的使用！\n更多信息请访问：www.shuax.com"),szClass,MB_OK | MB_ICONINFORMATION);
+            MessageBox(hwnd,_T("MouseEnhancer v1.5\n\n本软件是免费软件，欢迎你的使用！\n更多信息请访问：www.shuax.com"),szClass,MB_OK | MB_ICONINFORMATION);
             InvalidateRect(hwnd, NULL, false);
             break;
         default:
@@ -308,7 +313,6 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
             nid.uID = 101;
             Shell_NotifyIcon(NIM_DELETE, &nid);//删除图标
         }
-
         PostQuitMessage (0);
         break;
     default:
@@ -338,8 +342,33 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
 
     return RegisterClassEx(&wcex);
 }
+BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
+{
+    size.x = 250;
+    size.y = 250;
+
+    HWND hwnd = CreateWindowEx(WS_EX_TOOLWINDOW, szClass, szClass, WS_POPUPWINDOW,
+                               CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, NULL, NULL, hInstance, NULL);
+
+    if (!hwnd)
+    {
+        return FALSE;
+    }
+    m_hwnd = hwnd;
+    SetWindowLong(hwnd, GWL_EXSTYLE, GetWindowLong(hwnd, GWL_EXSTYLE) | WS_EX_TRANSPARENT);
+    SetWindowLong(hwnd, GWL_EXSTYLE, GetWindowLong(hwnd, GWL_EXSTYLE) | WS_EX_LAYERED);
+
+    SetWindowPos(hwnd, HWND_TOPMOST, (GetSystemMetrics(SM_CXSCREEN) - size.x)/2, (GetSystemMetrics(SM_CYMAXIMIZED) -size.y)/2, size.x, size.y, SWP_HIDEWINDOW);
+    //SetLayeredWindowAttributes(hwnd, 0, 0, 2);
+    return TRUE;
+}
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
+    //GDI++
+    GdiplusStartupInput gdiplusStartupInput;
+    ULONG_PTR gdiplusToken;
+    GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL);
+
     MSG msg;
 
     myset.Init();
@@ -371,6 +400,8 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
     }
 
     //
+    GdiplusShutdown(gdiplusToken);
     UnhookWindowsHookEx((HHOOK)g_hook);
+
     return msg.wParam;
 }
