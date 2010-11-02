@@ -17,8 +17,8 @@ TCHAR szClass[] = _T("MouseEnhancer v1.5");
 #include "settings.h"
 #include "GestureRecognizer.h"
 
-settings myset;
-Gesture gr;
+
+
 
 //定义钩子
 HWND g_hook;
@@ -30,7 +30,7 @@ NOTIFYICONDATA nid;
 #define SWM_AUTO (WM_APP+102)
 #define SWM_SETT (WM_APP+103)
 
-POINT size;
+
 HWND m_hwnd;
 
 #include "showvol.h"
@@ -97,6 +97,7 @@ LRESULT CALLBACK LowLevelMouseProc(int nCode, WPARAM wParam, LPARAM lParam)
             if((GetKeyState(myset.MyKey)& 0x8000)!=0 && myset.isGus)
             {
                 gr.begin(pmouse->pt);
+                _beginthread(ShowMouse,0,0);
                 return 1;
             }
             if(!myset.isRim) break;
@@ -116,6 +117,7 @@ LRESULT CALLBACK LowLevelMouseProc(int nCode, WPARAM wParam, LPARAM lParam)
             if((GetKeyState(myset.MyKey)& 0x8000)!=0 && myset.isGus)
             {
                 gr.add(pmouse->pt);
+                //return 1;
             }
             break;
         case WM_RBUTTONUP:
@@ -235,9 +237,6 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     switch (message)
     {
-    case WM_CREATE:
-        create(hwnd);
-        break;
     case WM_COMMAND:
         switch (wParam)
         {
@@ -309,7 +308,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
     case WM_DESTROY:
         if(myset.isIco)
         {
-            nid.hWnd = hwnd;
+            nid.hWnd = m_hwnd;
             nid.uID = 101;
             Shell_NotifyIcon(NIM_DELETE, &nid);//删除图标
         }
@@ -317,7 +316,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
         break;
     default:
         if (message == RegisterWindowMessage(_T("TaskbarCreated")))//Explorer崩溃时重建图标
-            SendMessage(hwnd, WM_CREATE, wParam, lParam);
+            create(hwnd);
         else
             return DefWindowProc(hwnd, message, wParam, lParam);
         break;
@@ -344,8 +343,6 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
 }
 BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
-    size.x = 250;
-    size.y = 250;
 
     HWND hwnd = CreateWindowEx(WS_EX_TOOLWINDOW, szClass, szClass, WS_POPUPWINDOW,
                                CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, NULL, NULL, hInstance, NULL);
@@ -357,8 +354,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
     m_hwnd = hwnd;
     SetWindowLong(hwnd, GWL_EXSTYLE, GetWindowLong(hwnd, GWL_EXSTYLE) | WS_EX_TRANSPARENT);
     SetWindowLong(hwnd, GWL_EXSTYLE, GetWindowLong(hwnd, GWL_EXSTYLE) | WS_EX_LAYERED);
-
-    SetWindowPos(hwnd, HWND_TOPMOST, (GetSystemMetrics(SM_CXSCREEN) - size.x)/2, (GetSystemMetrics(SM_CYMAXIMIZED) -size.y)/2, size.x, size.y, SWP_HIDEWINDOW);
+    create(hwnd);
     //SetLayeredWindowAttributes(hwnd, 0, 0, 2);
     return TRUE;
 }

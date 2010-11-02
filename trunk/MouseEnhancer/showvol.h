@@ -1,32 +1,6 @@
 #ifndef _SHOWVOL_H_
 #define _SHOWVOL_H_
 
-bool ImageFromIDResource(UINT nID, Image *&pImg)
-{
-    HINSTANCE hInst = ::GetModuleHandle(0);
-
-    HRSRC hRsrc = ::FindResource (hInst, MAKEINTRESOURCE(nID), _T("VOL"));
-    if (!hRsrc) return FALSE;
-
-    DWORD len = SizeofResource(hInst, hRsrc);
-    BYTE* lpRsrc = (BYTE*)LoadResource(hInst, hRsrc);
-    if (!lpRsrc) return FALSE;
-    HGLOBAL m_hMem = GlobalAlloc(GMEM_FIXED, len);
-
-    BYTE* pmem = (BYTE*)GlobalLock(m_hMem);
-    memcpy(pmem, lpRsrc, len);
-    IStream* pstm;
-    CreateStreamOnHGlobal(m_hMem, FALSE, &pstm);
-    pImg = Image::FromStream(pstm);
-
-    GlobalUnlock(m_hMem);
-
-    pstm->Release();
-
-    FreeResource(lpRsrc);
-    return TRUE;
-}
-
 int GetVolume()
 {
     typedef bool(__stdcall* GetVolumnVista)(UINT&);
@@ -66,7 +40,9 @@ int GetVolume()
     }
     return dwVolume;
 }
-void OnPaint(HWND hwnd,int vol,int alpha)
+
+POINT size;
+void OnPaintVol(HWND hwnd,int vol,int alpha)
 {
     HDC hdc = GetDC(hwnd);
     HDC mdc = CreateCompatibleDC(hdc);
@@ -134,6 +110,11 @@ void ShowVol(PVOID pvoid)
         notrun = false;
 
         HWND hwnd = (HWND)pvoid;
+
+
+        size.x = 250;
+        size.y = 250;
+        SetWindowPos(hwnd, HWND_TOPMOST, (GetSystemMetrics(SM_CXSCREEN) - size.x)/2, (GetSystemMetrics(SM_CYMAXIMIZED) -size.y)/2, size.x, size.y, SWP_HIDEWINDOW);
         ShowWindow (hwnd, SW_SHOW);
 
 
@@ -150,7 +131,7 @@ void ShowVol(PVOID pvoid)
                 fade = 255;
                 break;
             }
-            OnPaint(m_hwnd,GetVolume(),fade);
+            OnPaintVol(m_hwnd,GetVolume(),fade);
             Sleep(30);
         }
         //显示界面
@@ -158,7 +139,7 @@ void ShowVol(PVOID pvoid)
         {
 
             int n_vol = GetVolume();
-            OnPaint(m_hwnd,n_vol,fade);
+            OnPaintVol(m_hwnd,n_vol,fade);
 
             //判断音量是否变化，如果变化则重新计时
             if(n_vol!=o_vol)
@@ -184,7 +165,7 @@ void ShowVol(PVOID pvoid)
             {
                 break;
             }
-            OnPaint(m_hwnd,GetVolume(),fade);
+            OnPaintVol(m_hwnd,GetVolume(),fade);
             if(GetVolume()!=o_vol) break;
             Sleep(30);
         }
