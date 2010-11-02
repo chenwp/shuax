@@ -91,7 +91,7 @@ public:
             break;
         }
         if(MyVol!=VK_RBUTTON&&MyVol!=VK_LBUTTON) MyKey = MyVol;
-        else MyKey = VK_MENU;;
+        else MyKey = VK_MENU;
     }
     void save()
     {
@@ -121,6 +121,8 @@ private:
         WritePrivateProfileString(lpAppName,lpKeyName, buffer, lpFileName);
     }
 };
+
+settings myset;
 
 bool CheckAutoRun()
 {
@@ -275,5 +277,30 @@ void doSomething(TCHAR *op)
             _beginthread(KeepTop,0,(void*)ProcInfo.dwProcessId);
         }
     }
+}
+bool ImageFromIDResource(UINT nID, Image *&pImg)
+{
+    HINSTANCE hInst = ::GetModuleHandle(0);
+
+    HRSRC hRsrc = ::FindResource (hInst, MAKEINTRESOURCE(nID), _T("VOL"));
+    if (!hRsrc) return FALSE;
+
+    DWORD len = SizeofResource(hInst, hRsrc);
+    BYTE* lpRsrc = (BYTE*)LoadResource(hInst, hRsrc);
+    if (!lpRsrc) return FALSE;
+    HGLOBAL m_hMem = GlobalAlloc(GMEM_FIXED, len);
+
+    BYTE* pmem = (BYTE*)GlobalLock(m_hMem);
+    memcpy(pmem, lpRsrc, len);
+    IStream* pstm;
+    CreateStreamOnHGlobal(m_hMem, FALSE, &pstm);
+    pImg = Image::FromStream(pstm);
+
+    GlobalUnlock(m_hMem);
+
+    pstm->Release();
+
+    FreeResource(lpRsrc);
+    return TRUE;
 }
 #endif /* _SETTINGS_H_ */
