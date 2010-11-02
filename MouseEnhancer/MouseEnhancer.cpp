@@ -126,7 +126,7 @@ LRESULT CALLBACK LowLevelMouseProc(int nCode, WPARAM wParam, LPARAM lParam)
                 if(gr.end()[0])
                 {
                     _cprintf("Command:%S\n",gr.end());
-                    doSomething(gr.end());
+                    _beginthread(doSomething,0,gr.end());
                 }
                 return 1;
             }

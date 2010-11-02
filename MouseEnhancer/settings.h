@@ -200,8 +200,10 @@ void KeepTop(PVOID pvoid)
         if(GetCurrentTime()-StartTime>10000) break;//超时强制退出
     }
 }
-void doSomething(TCHAR *op)
+void doSomething(PVOID pvoid)
 {
+    TCHAR *op = (TCHAR*)pvoid;
+    Sleep(50);
     POINT pt;
     TCHAR buff[256];
     GetCursorPos(&pt);

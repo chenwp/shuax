@@ -148,7 +148,7 @@ void ShowMouse(PVOID pvoid)
         long time = GetCurrentTime();
         //ÏÔÊ¾´°¿Ú
         HWND hwnd = gr.g_hwnd;
-        //SetWindowLong(hwnd, GWL_EXSTYLE, GetWindowLong(hwnd, GWL_EXSTYLE) | WS_EX_TRANSPARENT);
+        SetWindowLong(hwnd, GWL_EXSTYLE, GetWindowLong(hwnd, GWL_EXSTYLE) | WS_EX_TRANSPARENT);
         SetWindowLong(hwnd, GWL_EXSTYLE, GetWindowLong(hwnd, GWL_EXSTYLE) | WS_EX_LAYERED);
         SetWindowPos(hwnd, HWND_TOPMOST, 0, 0, GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN ), SWP_SHOWWINDOW);
         ShowWindow (hwnd, SW_SHOW);
@@ -191,12 +191,14 @@ void ShowMouse(PVOID pvoid)
             buffer.DrawPath(&pen,&path);
             pt1 = pt2;
             graphics.DrawImage(&CacheImage, 0, 0);
-            graphics.ReleaseHDC(mdc);
+
             UpdateLayeredWindow(hwnd, hdc, &ptWinPos, &sizeWindow, mdc, &ptSrc, 0, &m_Blend, 2);
-            ReleaseDC(hwnd,hdc);
-            DeleteObject(hBitMap);
+
             Sleep(10);
         }
+        graphics.ReleaseHDC(mdc);
+        ReleaseDC(hwnd,hdc);
+        DeleteObject(hBitMap);
         DeleteDC(mdc);
         ShowWindow (hwnd, SW_HIDE);
         notrun = true;
