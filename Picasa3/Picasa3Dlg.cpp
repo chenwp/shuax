@@ -23,7 +23,7 @@ static char THIS_FILE[] = __FILE__;
 #endif
 
 #define BIF_NEWDIALOGSTYLE 0x0040
-wchar_t title[]=L"Picasa3精简版";
+wchar_t title[]=L"Picasa 3.8 精简版";
 /////////////////////////////////////////////////////////////////////////////
 // CPicasa3Dlg dialog
 
@@ -66,7 +66,7 @@ BOOL CPicasa3Dlg::OnInitDialog()
 	// TODO: Add extra initialization here
 	
 	//
-	OutputDebugString("舒俊杰 2010年5月23日");
+	OutputDebugString("http://www.shuax.com");
 
 	SetWindowTextW(this->GetSafeHwnd(),title);
     isAero=false;
@@ -109,9 +109,22 @@ void CPicasa3Dlg::OnPaint()
 		buffer.DrawImage(button, 365,288);
 		buffer.DrawImage(logo, -5,10);
 		
-		static wchar_t welcome[]=L"欢迎使用 Picasa3.8 精简版";
-		static wchar_t comment1[]=L"　　Picasa原为独立收费的图像管理、处理软件，其界面美观华丽，功能\n丰富。后来被Google收购并改为免费软件，成为了Google的一部分。它\n可以帮助您在计算机上立即找到、修改和共享所有图片，Picasa突出的优\n点是搜索硬盘中的相片图片的速度很快。更值得说的是启动速度很快，完\n全可以做为系统默认的图片查看器！\n支持图片类型：jpg、bmp、gif、png、psd、tif。";
-		static wchar_t comment2[]=L"　　这个精简版是应一个网友的建议做的。他说：“我只想用Picasa里面的全屏浏览图片的功能，\n有没有这种精简版？”其实是有的，一个只有图片查看器的软件，只不过我没告诉他- -。只不过网\n上流传那个精简版好久没更新了，而且还是英文版，所以我就直接告诉他方法了：只保留\"PicasaP\nhotoViewer.exe\"和\"/runtime/slingshot/respack.yt\"两个文件，当然目录位置要保持不变，然后\n设置文件关联即可。据说完整的Picasa3安装好已经80多M了，这个看图工具才3M多一点点，也许\n很多人都不喜欢管理功能，只用这个看图功能呢，比如我(*^__^*) 。说了这么多废话，所以我最终\n决定自己动手做一个精简版，然而一两天又学不会NSIS，就继续用擅长的MFC做吧。\n\n文件版本：3.8.117.16\n数字签名：2010.10.15";
+		static wchar_t welcome[]=L"欢迎使用 Picasa 3.8 精简版";
+		static wchar_t comment1[]=
+			L"　　Picasa 原为独立收费的图像管理、处理软件，其界面美观华丽，功\n"
+			L"能丰富。后来被 Google 收购并改为免费软件，成为了 Google 的一部\n"
+			L"分。它可以帮助您在计算机上立即找到、修改和共享所有图片，Picasa\n"
+			L"突出的优点是启动速度很快，完全可以做为系统默认的图片查看器！支\n"
+			L"持图片类型：jpg、bmp、gif、png、psd、tif。";
+		static wchar_t comment2[]=
+			L"　　这个精简版仅保留了图片查看器 PicasaPhotoViewer.exe 。因为很多人喜欢用 Picasa 的全\n"
+			L"屏浏览图片的功能，但是又不需要它的处理功能。比如我，就不喜欢它的管理功能，只用这个看\n"
+			L"图功能。据说完整的Picasa3安装好已经80多M了，这个看图工具才4M多一点点呢 。\n\n"
+			L"　　说了那么多，反正最终自己动手做一个精简版。安装结束后，程序会根据您的系统，自动选\n"
+			L"择关联方式，请注意查看帮助信息。\n\n"
+			L"我的网址：www.shuax.com\n文件版本：3.8.117.24\n数字签名：2010.11.13";
+		
+		
 		static wchar_t btn1[] = L"安装";
 		static wchar_t btn2[] = L"卸载";
 		
@@ -229,7 +242,7 @@ void CPicasa3Dlg::OnLButtonDown(UINT nFlags, CPoint point)
 			unsigned long len=1024;
 			if (RegQueryValueEx(hKey, "InstallDir", 0, 0,(unsigned char*)&path, &len) == ERROR_SUCCESS)
 			{
-				if(MessageBoxW(this->GetSafeHwnd(),L"您已经安装了Picasa3精简版，你还要继续吗？",title,MB_YESNO + MB_ICONINFORMATION)==IDNO) return;
+				if(MessageBoxW(this->GetSafeHwnd(),L"您已经安装了 Picasa 3.8 精简版，你还要继续吗？",title,MB_YESNO + MB_ICONINFORMATION)==IDNO) return;
 			}
 		}
 		RegCloseKey(hKey);
@@ -238,7 +251,7 @@ void CPicasa3Dlg::OnLButtonDown(UINT nFlags, CPoint point)
 		bi.hwndOwner = this->GetSafeHwnd();
 		bi.pidlRoot = NULL;
 		bi.pszDisplayName = NULL;
-		bi.lpszTitle = L"请选择要安装 Picasa3精简版 的文件夹位置";
+		bi.lpszTitle = L"请选择要安装 Picasa 3.8 精简版 的文件夹位置";
 		bi.ulFlags = BIF_NEWDIALOGSTYLE | BIF_RETURNONLYFSDIRS;
 		bi.lpfn = BrowserCallbackProc;
 		bi.lParam = (LPARAM)"C:\\Program Files\\";//初始化位置
@@ -281,7 +294,7 @@ void CPicasa3Dlg::OnLButtonDown(UINT nFlags, CPoint point)
 			GetVersionEx(&info);   
 			if (info.dwMajorVersion<6)
 			{
-				MessageBoxW(this->GetSafeHwnd(),L"您正在使用的是XP系统，即将调用Picasa3程序自带的文件关联功能，请选择你要关联的格式。",title,MB_OK + MB_ICONINFORMATION);
+				MessageBoxW(this->GetSafeHwnd(),L"您正在使用的是XP系统，即将调用 Picasa 程序自带的文件关联功能，请选择你要关联的格式。",title,MB_OK + MB_ICONINFORMATION);
 				wsprintfW(install,L"\"%s\\Picasa3\\PicasaPhotoViewer.exe\"",temppath);
 				ShellExecuteW(0, NULL,install,L"/config", NULL, SW_SHOWNORMAL);
 			}
@@ -335,11 +348,11 @@ void CPicasa3Dlg::OnLButtonDown(UINT nFlags, CPoint point)
 					RegDeleteValue(hKey, "Picasa3");
 				}
 				RegCloseKey(hKey);
-				MessageBoxW(this->GetSafeHwnd(),L"Picasa3精简版 卸载完成，感谢您的使用。",title,MB_OK + MB_ICONINFORMATION);
+				MessageBoxW(this->GetSafeHwnd(),L"Picasa 3.8 精简版 卸载完成，感谢您的使用。",title,MB_OK + MB_ICONINFORMATION);
 				return;
 			}
-		}
-		MessageBoxW(this->GetSafeHwnd(),L"您还没有安装 Picasa3精简版 呢，赶快安装吧。",title,MB_OK + MB_ICONINFORMATION);
+		} 
+		MessageBoxW(this->GetSafeHwnd(),L"您还没有安装 Picasa 3.8 精简版 呢，赶快安装吧。",title,MB_OK + MB_ICONINFORMATION);
 		return ;
 	}
 	PostMessage(WM_NCLBUTTONDOWN,(WPARAM)HTCAPTION,(LPARAM)HTCAPTION);
@@ -363,16 +376,16 @@ bool CPicasa3Dlg::Win7Install(wchar_t *temppath)
 	RegCreateKeyEx(HKEY_LOCAL_MACHINE, "SOFTWARE\\Picasa3\\Capabilities\\FileAssociations", 0, 0, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, 0,&hKey, 0);
 	if(RegOpenKeyEx(HKEY_LOCAL_MACHINE, "SOFTWARE\\Picasa3\\Capabilities", 0, KEY_ALL_ACCESS, &hKey)==ERROR_SUCCESS)
 	{
-		char Description[]="Picasa 是由 Google 提供的免费照片修改软件，可使照片拥有出色的呈现效果。 您只需按一下按钮就可以将自己最不错的照片分享给亲朋好友！";
-		char Name[]="Picasa3 精简版";
+		char Description[]="Picasa 是由 Google 提供的免费照片软件。  检查精简版更新请访问：www.shuax.com";
+		char Name[]="Picasa 3.8 精简版";
 		RegSetValueEx(hKey, "ApplicationDescription", 0, REG_SZ, (unsigned char *)Description, strlen(Description));
 		RegSetValueEx(hKey, "ApplicationName", 0, REG_SZ, (unsigned char *)Name, strlen(Name));
 	}else result = false;
 	if(RegOpenKeyEx(HKEY_LOCAL_MACHINE, "SOFTWARE\\Picasa3\\Capabilities\\FileAssociations", 0, KEY_ALL_ACCESS, &hKey)==ERROR_SUCCESS)
 	{
 		char Associations[]="PicasaPhotoViewer";
-		char File[][6]={".jpg",".jpe",".jpeg",".tif",".tiff",".bmp",".gif",".png",".tga",".raw",".crw",".cr2",".nef",".orf",".dcr",".mrw",".pef",".raf",".srf",".dng",".kdc",".sr2",".arw",".3fr",".x3f",".rw2",".nrw"};
-		for(int i=0;i<26;i++)
+		char File[][6]={".jpg",".jpe",".jpeg",".tif",".tiff",".bmp",".gif",".png",".tga",".raw"};
+		for(int i=0;i<10;i++)
 		{
 			RegSetValueEx(hKey, File[i], 0, REG_SZ, (unsigned char *)Associations, strlen(Associations));
 		}
