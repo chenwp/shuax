@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <CodeBlocks_layout_file>
 	<ActiveTarget name="Release" />
-	<File name="GestureRecognizer.h" open="0" top="0" tabpos="2">
-		<Cursor position="3625" topLine="142" />
+	<File name="GestureRecognizer.h" open="0" top="0" tabpos="3">
+		<Cursor position="5121" topLine="187" />
 	</File>
 	<File name="MouseEnhancer.cpp" open="1" top="0" tabpos="1">
-		<Cursor position="3995" topLine="107" />
+		<Cursor position="10826" topLine="301" />
 	</File>
 	<File name="resource.rc" open="0" top="0" tabpos="2">
-		<Cursor position="328" topLine="0" />
+		<Cursor position="297" topLine="0" />
 	</File>
-	<File name="settings.h" open="1" top="1" tabpos="2">
-		<Cursor position="6334" topLine="194" />
+	<File name="settings.h" open="0" top="0" tabpos="3">
+		<Cursor position="10368" topLine="0" />
 	</File>
-	<File name="showvol.h" open="0" top="0" tabpos="4">
-		<Cursor position="2475" topLine="38" />
+	<File name="showvol.h" open="1" top="1" tabpos="2">
+		<Cursor position="163" topLine="0" />
 	</File>
 </CodeBlocks_layout_file>

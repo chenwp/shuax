@@ -12,7 +12,7 @@
 #include <GdiPlus.h>
 using namespace Gdiplus;
 
-TCHAR szClass[] = _T("MouseEnhancer v1.5");
+TCHAR szClass[] = _T("MouseEnhancer v1.6");
 
 #include "settings.h"
 #include "GestureRecognizer.h"
@@ -61,28 +61,27 @@ LRESULT CALLBACK LowLevelMouseProc(int nCode, WPARAM wParam, LPARAM lParam)
             if(nowDest!=oldDest && nowTime<myset.t_Whl) return 1;
             oldDest = nowDest;
 
-            if((GetKeyState(myset.MyVol)& 0x8000)!=0 && myset.isVol)
+            if(myset.isVol && (GetKeyState(myset.v_key)& 0x8000)!=0)
             {
                 //ctrl down
                 short zDelta = (short)HIWORD(pmouse->mouseData);
                 _cprintf("Wheel direction:\t%d\n",zDelta);
-                if(zDelta==120)
+
+                for(int i =0 ; i<myset.v_var; i++)
                 {
-                    //up
-                    SendMessage(WindowFromPoint(pmouse->pt), 793, 197266, 655360);
-                    SendMessage(WindowFromPoint(pmouse->pt), 793, 197266, 655360);
-                    SendMessage(WindowFromPoint(pmouse->pt), 793, 197266, 655360);
+                    if(zDelta==120)
+                    {
+                        //up
+                        SendMessage(WindowFromPoint(pmouse->pt), 793, 197266, 655360);
+                    }
+                    else
+                    {
+                        //down
+                        SendMessage(WindowFromPoint(pmouse->pt), 793, 197266, 589824);
+                    }
                 }
-                else
-                {
-                    //down
-                    SendMessage(WindowFromPoint(pmouse->pt), 793, 197266, 589824);
-                    SendMessage(WindowFromPoint(pmouse->pt), 793, 197266, 589824);
-                    SendMessage(WindowFromPoint(pmouse->pt), 793, 197266, 589824);
-                }
-                //
-                PlaySound(MAKEINTRESOURCE(130), GetModuleHandle(NULL), SND_RESOURCE | SND_ASYNC | SND_NOWAIT | SND_NODEFAULT);
-                _beginthread(ShowVol,0,(void*)m_hwnd);
+                if(!myset.v_glb && myset.v_snd) PlaySound(MAKEINTRESOURCE(130), GetModuleHandle(NULL), SND_RESOURCE | SND_ASYNC | SND_NOWAIT | SND_NODEFAULT);
+                if(!myset.v_glb && myset.v_osd) _beginthread(ShowVol,0,(void*)m_hwnd);
                 return 1;
             }
             if(myset.isWeh)
@@ -94,10 +93,9 @@ LRESULT CALLBACK LowLevelMouseProc(int nCode, WPARAM wParam, LPARAM lParam)
             break;
         case WM_RBUTTONDOWN:
             //
-            if((GetKeyState(myset.MyKey)& 0x8000)!=0 && myset.isGus)
+            if( myset.isGus && (GetKeyState(myset.m_key)& 0x8000)!=0 )
             {
                 gr.begin(pmouse->pt);
-                _beginthread(ShowMouse,0,0);
                 return 1;
             }
             if(!myset.isRim) break;
@@ -114,14 +112,14 @@ LRESULT CALLBACK LowLevelMouseProc(int nCode, WPARAM wParam, LPARAM lParam)
             }
             break;
         case WM_MOUSEMOVE:
-            if((GetKeyState(myset.MyKey)& 0x8000)!=0 && myset.isGus)
+            if(myset.isGus && (GetKeyState(myset.m_key)& 0x8000)!=0)
             {
                 gr.add(pmouse->pt);
                 //return 1;
             }
             break;
         case WM_RBUTTONUP:
-            if((GetKeyState(myset.MyKey)& 0x8000)!=0 && myset.isGus)
+            if(myset.isGus && (GetKeyState(myset.m_key)& 0x8000)!=0 )
             {
                 if(gr.end()[0])
                 {
@@ -210,6 +208,8 @@ void create(HWND hwnd)
     myset.Init();
     myset.save();
 
+    if(myset.v_glb) SetTimer(hwnd, 1, 100, NULL);
+    else KillTimer(hwnd,1);
     if(myset.isDbg) AllocConsole();
     else FreeConsole();
 
@@ -223,7 +223,7 @@ void create(HWND hwnd)
     nid.hIcon = LoadIcon(GetModuleHandle(NULL), _T("B"));
     _tcscpy(nid.szTip, szClass);
     Shell_NotifyIcon(NIM_ADD, &nid);
-     return;
+    return;
 }
 void ManSet(PVOID pvoid)
 {
@@ -235,6 +235,8 @@ void ManSet(PVOID pvoid)
 }
 LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
+    static int oldv;
+    static int newv;
     switch (message)
     {
     case WM_COMMAND:
@@ -301,6 +303,31 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
             break;
         case WM_LBUTTONDBLCLK:
             //SendMessage(hwnd, WM_COMMAND, SWM_HELP, 0);
+            break;
+        }
+        break;
+    case WM_TIMER:
+        switch(wParam)
+        {
+        case 1:
+            if(oldv==0)
+            {
+                oldv = GetVolume();
+                break;
+            }
+            newv = GetVolume();
+            if(newv!=oldv)
+            {
+                if(myset.v_snd)
+                {
+                    for(int i = 0; i<abs(newv-oldv)/2; i++)
+                    {
+                        PlaySound(MAKEINTRESOURCE(130), GetModuleHandle(NULL), SND_RESOURCE | SND_ASYNC | SND_NOWAIT | SND_NODEFAULT);
+                    }
+                }
+                if(myset.v_osd) _beginthread(ShowVol,0,(void*)m_hwnd);
+                oldv = newv;
+            }
             break;
         }
         break;

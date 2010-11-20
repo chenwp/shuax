@@ -1,8 +1,16 @@
+#include "windows.h"
 A ICON MOVEABLE PURE LOADONCALL DISCARDABLE "res\\AllWheel.ico"
 B ICON MOVEABLE PURE LOADONCALL DISCARDABLE "res\\tray.ico"
 1 24      DISCARDABLE     "res\\style.bin"
 
-1 VOL      DISCARDABLE     "res\\vol\\back.png"
-2 VOL      DISCARDABLE     "res\\vol\\mute.png"
-3 VOL      DISCARDABLE     "res\\vol\\meter.png"
+1 PNG      DISCARDABLE     "res\\vol\\back.png"
+2 PNG      DISCARDABLE     "res\\vol\\mute.png"
+3 PNG      DISCARDABLE     "res\\vol\\meter.png"
+
 130 WAVE      DISCARDABLE     "res\\vol\\sound.wav"
+
+"101" DIALOGEX 0,0,0,0
+EXSTYLE WS_EX_TOOLWINDOW
+STYLE WS_POPUPWINDOW
+BEGIN
+END

@@ -2,9 +2,13 @@
 #define _GESTURE_H_
 
 #include <math.h>
-
+#include <vector>
+using namespace std;
 TCHAR str[][4]= {_T(""),_T("U"),_T("R"),_T("D"),_T("L")};
-class Gesture
+
+BOOL CALLBACK ShowMouseProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+
+static class Gesture
 {
 private:
     POINT now;
@@ -15,45 +19,57 @@ private:
     int count[5];//0-5
     int result;
 
+
     int  getDistance(POINT a, POINT b);
     int  getOrientation(POINT a, POINT b);
 
 public:
     Gesture();
     HWND g_hwnd;
+    vector <Gdiplus::Point> v_pt;
     bool isrun;
     void begin(POINT pt);
     void add(POINT pt);
     TCHAR* end();
-};
+} gr;
 Gesture::Gesture()
 {
 
 }
 void Gesture::begin(POINT pt)
 {
-    g_hwnd = CreateWindowEx(WS_EX_TOOLWINDOW, szClass, szClass, WS_POPUP,
-                            CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, NULL, NULL, GetModuleHandle(NULL), NULL);
+    //显示窗口
+    CreateDialog (GetModuleHandle(NULL),_T("101"),0,ShowMouseProc);
+
     isrun = true;
     time = GetCurrentTime();
     now = pt;
     for(int i=0; i<5; i++) count[i]=0;
     command[0]=0;
     result=0;
+    v_pt.clear();
 }
 TCHAR* Gesture::end()
 {
     if(GetCurrentTime()-time>1500) command[0]=0;
     isrun = false;
+    SendMessage(g_hwnd, WM_CLOSE, 1, 0);
+    v_pt.clear();
+    command[0]=0;
     return command;
 }
 void Gesture::add(POINT pt)
 {
-    if(GetCurrentTime()-time>1500)
+    if(GetCurrentTime()-time>15000)
     {
+        SendMessage(g_hwnd, WM_CLOSE, 1, 0);
         isrun = false;
         return;
     }
+
+    v_pt.push_back(Point(pt.x,pt.y));
+    InvalidateRect(g_hwnd, NULL, false);
+
     if (getDistance(pt, now) > 4)
     {
         count[getOrientation(pt, now)]++;
@@ -136,72 +152,74 @@ int Gesture::getOrientation(POINT a, POINT b)
     //_cprintf("%d \n",orientation);
     return orientation;
 }
-Gesture gr;
-
-void ShowMouse(PVOID pvoid)
+void OnPaintMouse(HDC hdc)
 {
-    static bool notrun = true;
-    if(notrun)
-    {
-        notrun = false;
-        //
-        long time = GetCurrentTime();
-        //显示窗口
-        HWND hwnd = gr.g_hwnd;
-        SetWindowLong(hwnd, GWL_EXSTYLE, GetWindowLong(hwnd, GWL_EXSTYLE) | WS_EX_TRANSPARENT);
-        SetWindowLong(hwnd, GWL_EXSTYLE, GetWindowLong(hwnd, GWL_EXSTYLE) | WS_EX_LAYERED);
-        SetWindowPos(hwnd, HWND_TOPMOST, 0, 0, GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN ), SWP_SHOWWINDOW);
-        ShowWindow (hwnd, SW_SHOW);
-        //窗口参数
-        SIZE sizeWindow = {GetSystemMetrics(SM_CXSCREEN),GetSystemMetrics(SM_CYSCREEN )};
-        BLENDFUNCTION m_Blend;
-        m_Blend.BlendOp = 0;
-        m_Blend.BlendFlags = 0;
-        m_Blend.AlphaFormat = 1;
-        m_Blend.SourceConstantAlpha = 128+32;
-        RECT rct;
-        GetWindowRect(hwnd, &rct);
-        POINT ptSrc = {0, 0};
-        POINT ptWinPos = {rct.left, rct.top};
-        //创建画布
-        HDC hdc = GetDC(hwnd);
-        HDC mdc = CreateCompatibleDC(hdc);
-        HBITMAP hBitMap = CreateCompatibleBitmap(hdc, GetSystemMetrics(SM_CXSCREEN),GetSystemMetrics(SM_CYSCREEN ));
-        SelectObject(mdc, hBitMap);
+    //创建画布
+    static bool run = false;
+    int sx = GetSystemMetrics(SM_CXSCREEN);
+    int sy = GetSystemMetrics(SM_CYSCREEN);
+    HDC mdc = CreateCompatibleDC(hdc);
+    HBITMAP hBitMap = CreateCompatibleBitmap(hdc, sx, sy);
+    SelectObject(mdc, hBitMap);
+    Graphics graphics(mdc);
+    graphics.Clear(Color(0,255,255,255));
+    graphics.SetSmoothingMode(SmoothingModeAntiAlias);
+    graphics.SetCompositingQuality(CompositingQualityHighQuality);
+    graphics.SetInterpolationMode(InterpolationModeHighQualityBicubic);
+    //显示界面
 
-        Graphics graphics(mdc);
-        graphics.SetSmoothingMode(SmoothingModeHighQuality);
-        //graphics.SetTextRenderingHint(TextRenderingHintAntiAlias);
+    Pen pen(Color(255, 152, 204, 0), 4.0);
 
-        //graphics.Clear(Color(255,255,255));
-        Bitmap CacheImage(GetSystemMetrics(SM_CXSCREEN),GetSystemMetrics(SM_CYSCREEN ));
-        Graphics buffer(&CacheImage);
+    graphics.DrawBeziers(&pen,(Point*)&gr.v_pt[0],(INT)gr.v_pt.size());
 
-        //显示界面
-        POINT pt1;
-        POINT pt2;
-        GetCursorPos(&pt1);
-        Pen pen(Color(255, 0, 155, 0), 3.5);
-        while(GetCurrentTime()-time<1500 && (GetKeyState(myset.MyKey)& 0x8000)!=0 && gr.isrun)
-        {
-            GetCursorPos(&pt2);
-            GraphicsPath path;
-            if(pt1.x == pt2.x && pt1.y == pt2.y) continue;
-            path.AddLine((INT)pt1.x,pt1.y,pt2.x,pt2.y);
-            buffer.DrawPath(&pen,&path);
-            pt1 = pt2;
-            graphics.DrawImage(&CacheImage, 0, 0);
+    graphics.ReleaseHDC(mdc);
 
-            UpdateLayeredWindow(hwnd, hdc, &ptWinPos, &sizeWindow, mdc, &ptSrc, 0, &m_Blend, 2);
 
-            Sleep(10);
-        }
-        graphics.ReleaseHDC(mdc);
-        ReleaseDC(hwnd,hdc);
-        DeleteObject(hBitMap);
-        DeleteDC(mdc);
-        ShowWindow (hwnd, SW_HIDE);
-        notrun = true;
-    }
+    //窗口参数
+    SIZE sizeWindow = {sx,sy};
+    BLENDFUNCTION m_Blend;
+    m_Blend.BlendOp = 0;
+    m_Blend.BlendFlags = 0;
+    m_Blend.AlphaFormat = 1;
+    m_Blend.SourceConstantAlpha = 255;
+    RECT rct;
+    GetWindowRect(gr.g_hwnd, &rct);
+    POINT ptSrc = {0, 0};
+    POINT ptWinPos = {rct.left, rct.top};
+    UpdateLayeredWindow(gr.g_hwnd, hdc, &ptWinPos, &sizeWindow, mdc, &ptSrc, 0, &m_Blend, 2);
+
+    //释放资源
+	//ReleaseDC(gr.g_hwnd,hdc);
+	DeleteObject(hBitMap);
+	DeleteDC(mdc);
 }
+BOOL CALLBACK ShowMouseProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+    PAINTSTRUCT Ps;
+    HDC mdc, hdc;
+    switch (message)
+    {
+    case WM_INITDIALOG:
+        gr.g_hwnd = hWnd;
+        SetWindowLong(hWnd, GWL_EXSTYLE, GetWindowLong(hWnd, GWL_EXSTYLE) | WS_EX_TRANSPARENT);
+        SetWindowLong(hWnd, GWL_EXSTYLE, GetWindowLong(hWnd, GWL_EXSTYLE) | WS_EX_LAYERED);
+        SetWindowPos(hWnd, HWND_TOPMOST,0, 0, GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN), SWP_SHOWWINDOW);
+        _cprintf("start mouse\n");
+        break;
+    case WM_ERASEBKGND :
+        break;
+    case WM_PAINT:
+        _cprintf("start paint\n");
+        hdc = BeginPaint(hWnd, &Ps);
+        OnPaintMouse(hdc);
+        EndPaint(hWnd, &Ps);
+        break;
+    case WM_CLOSE:
+        _cprintf("end paint\n");
+        EndDialog(hWnd, wParam);
+        break;
+    }
+    return FALSE;
+}
+
 #endif /* _GESTURE_H_ */
