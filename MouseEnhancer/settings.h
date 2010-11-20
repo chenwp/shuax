@@ -10,6 +10,8 @@ TCHAR xiufushubiao[] = _T("修复功能");
 TCHAR xiufucanshu [] = _T("修复参数");
 TCHAR shebeixuanze[] = _T("设备选择");
 TCHAR gngnngshezhi[] = _T("功能设置");
+TCHAR yinliangkgzh[] = _T("音量控制");
+TCHAR shubiaoshous[] = _T("鼠标手势");
 
 #define APP_NAME _T("MouseEnhancer")
 
@@ -35,11 +37,15 @@ public:
     int t_Rls;
     int t_Whl;
 
-    int HtKey;
-    int MyKey;
-    int MyVol;
+    int v_key;
+    int v_var;
+    bool v_snd;
+    bool v_osd;
+    bool v_glb;
 
-    int g_opr[6];
+    int m_key;
+    bool m_shw;
+    //int g_opr[6];
     void Init()
     {
         //根据exe文件获得ini文件
@@ -63,35 +69,59 @@ public:
         isGus = GetPrivateProfileInt(gngnngshezhi, _T("鼠标手势"), 1, path);
         isIco = GetPrivateProfileInt(gngnngshezhi, _T("显示图标"), 1, path);
         isDbg = GetPrivateProfileInt(gngnngshezhi, _T("调试模式"), 0, path);
-        HtKey = GetPrivateProfileInt(gngnngshezhi, _T("快捷键"), 1, path);
 
-        switch(HtKey)
+        v_key = GetPrivateProfileInt(yinliangkgzh, _T("快捷键"), 1, path);
+
+        switch(v_key)
         {
         case 1:
-            MyVol = VK_MENU;
+            v_key = VK_MENU;
             break;
         case 2:
-            MyVol = VK_CONTROL;
+            v_key = VK_CONTROL;
             break;
         case 3:
-            MyVol = VK_SHIFT;
+            v_key = VK_SHIFT;
             break;
         case 4:
-            MyVol = VK_LWIN;
+            v_key = VK_LWIN;
             break;
         case 5:
-            MyVol = VK_RBUTTON;
+            v_key = VK_RBUTTON;
             break;
         case 6:
-            MyVol = VK_LBUTTON;
+            v_key = VK_LBUTTON;
             break;
         default:
-            MyVol = VK_MENU;
-            HtKey = 1;
+            v_key = VK_MENU;
             break;
         }
-        if(MyVol!=VK_RBUTTON&&MyVol!=VK_LBUTTON) MyKey = MyVol;
-        else MyKey = VK_MENU;
+
+        v_var = GetPrivateProfileInt(yinliangkgzh, _T("音量变化"), 6, path);
+        v_snd = GetPrivateProfileInt(yinliangkgzh, _T("调节音效"), 1, path);
+        v_osd = GetPrivateProfileInt(yinliangkgzh, _T("显示界面"), 1, path);
+        v_glb = GetPrivateProfileInt(yinliangkgzh, _T("监控全局"), 0, path);
+
+        m_key = GetPrivateProfileInt(shubiaoshous, _T("快捷键"), 1, path);
+        switch(m_key)
+        {
+        case 1:
+            m_key = VK_MENU;
+            break;
+        case 2:
+            m_key = VK_CONTROL;
+            break;
+        case 3:
+            m_key = VK_SHIFT;
+            break;
+        case 4:
+            m_key = VK_LWIN;
+            break;
+        default:
+            m_key = VK_MENU;
+            break;
+        }
+        m_shw = GetPrivateProfileInt(shubiaoshous, _T("显示轨迹"), 1, path);
     }
     void save()
     {
@@ -280,29 +310,29 @@ void doSomething(PVOID pvoid)
         }
     }
 }
-bool ImageFromIDResource(UINT nID, Image *&pImg)
+Gdiplus::Image* ImageFromIDResource(UINT resID, LPCTSTR resType)
 {
     HINSTANCE hInst = ::GetModuleHandle(0);
 
-    HRSRC hRsrc = ::FindResource (hInst, MAKEINTRESOURCE(nID), _T("VOL"));
-    if (!hRsrc) return FALSE;
+    HRSRC hRsrc = ::FindResource (hInst, MAKEINTRESOURCE(resID), resType);
+    if (!hRsrc) return NULL;
 
     DWORD len = SizeofResource(hInst, hRsrc);
     BYTE* lpRsrc = (BYTE*)LoadResource(hInst, hRsrc);
-    if (!lpRsrc) return FALSE;
+    if (!lpRsrc) return NULL;
     HGLOBAL m_hMem = GlobalAlloc(GMEM_FIXED, len);
 
     BYTE* pmem = (BYTE*)GlobalLock(m_hMem);
     memcpy(pmem, lpRsrc, len);
     IStream* pstm;
     CreateStreamOnHGlobal(m_hMem, FALSE, &pstm);
-    pImg = Image::FromStream(pstm);
+    Gdiplus::Image* ima=Gdiplus::Image::FromStream(pstm, TRUE);
 
     GlobalUnlock(m_hMem);
-
+    GlobalFree(m_hMem);
     pstm->Release();
 
     FreeResource(lpRsrc);
-    return TRUE;
+    return ima;
 }
 #endif /* _SETTINGS_H_ */
