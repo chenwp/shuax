@@ -61,7 +61,6 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 	{
 		TranslateMessage(&msg);
 		DispatchMessage(&msg);
-
 	}
 	//Ð¶ÔØHook
 	UnhookWindowsHookEx((HHOOK)glhMouseHook);

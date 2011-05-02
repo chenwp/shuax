@@ -85,11 +85,10 @@ extern "C"
 
 		int GetFileType()
 		{
-			DWORD dwAttributes = GetFileAttributesW(w_path);
+			DWORD dwAttributes = GetFileAttributes(w_path);
 			if (dwAttributes != 0xFFFFFFFF)
 			{
-				if ((dwAttributes & FILE_ATTRIBUTE_DIRECTORY) == FILE_ATTRIBUTE_DIRECTORY) return DIRECTORY;
-				else return DOCUMENT;
+				if ((dwAttributes & FILE_ATTRIBUTE_DIRECTORY) != FILE_ATTRIBUTE_DIRECTORY) return true;
 			}
 			return NOT_EXIST;
 		}
